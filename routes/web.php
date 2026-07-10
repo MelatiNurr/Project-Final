@@ -12,6 +12,7 @@ Route::get('/intelligence', function () {
     return view('intelligence');
 });
 
+Route::get('/countries', [App\Http\Controllers\PublicController::class, 'countriesIndex'])->name('countries.index');
 Route::get('/country/{id}', [App\Http\Controllers\PublicController::class, 'showCountry'])->name('country.show');
 
 

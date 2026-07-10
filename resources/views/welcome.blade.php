@@ -135,6 +135,15 @@
             <button class="btn btn-primary w-100 mb-4 fw-semibold shadow" onclick="compareCountries()"><i class="fa-solid fa-bolt me-1"></i> Analyze Risk Delta</button>
 
             <div id="comparison-results" class="d-none mt-4">
+                <!-- AI Recommendation Box -->
+                <div id="recommendation-box" class="alert alert-success d-none d-flex align-items-center mb-4" role="alert" style="background-color: rgba(16, 185, 129, 0.1); border-color: #10b981; color: #10b981;">
+                    <i class="fa-solid fa-circle-check fs-4 me-3"></i>
+                    <div>
+                        <h6 class="alert-heading fw-bold mb-1">Recommendation</h6>
+                        <span id="recommendation-text" class="small"></span>
+                    </div>
+                </div>
+
                 <h6 class="fw-bold mb-3 border-bottom border-secondary pb-2">Risk Breakdown</h6>
                 <canvas id="comparisonChart" height="250"></canvas>
                 
@@ -144,26 +153,26 @@
                         <span class="badge bg-dark border border-secondary text-light">Total Score</span>
                         <span id="cb-name" class="fw-bold text-warning">Country B</span>
                     </div>
-                    <div class="progress mt-2 mb-3" style="height: 12px; background-color: #334155;">
-                        <div id="ca-risk-bar" class="progress-bar bg-info" role="progressbar" style="width: 0%"></div>
-                        <div id="cb-risk-bar" class="progress-bar bg-warning" role="progressbar" style="width: 0%; right: 0; position: absolute;"></div>
+                    <div class="progress mt-2 mb-3" style="height: 12px; background-color: #334155; border-radius: 6px; overflow: hidden; position: relative;">
+                        <div id="ca-risk-bar" class="progress-bar bg-info" role="progressbar" style="width: 0%; height: 100%;"></div>
+                        <div id="cb-risk-bar" class="progress-bar bg-warning" role="progressbar" style="width: 0%; height: 100%; position: absolute; right: 0;"></div>
                     </div>
                     
                     <div class="d-flex justify-content-between align-items-center mb-1">
                         <span id="ca-currency" class="small fw-bold text-info">-</span>
-                        <span class="badge bg-dark border border-secondary text-light">Exchange Rate (USD)</span>
+                        <span class="badge bg-dark border border-secondary text-light px-2" style="font-size: 0.7rem;">EXCHANGE RATE (USD)</span>
                         <span id="cb-currency" class="small fw-bold text-warning">-</span>
                     </div>
                     
                     <div class="d-flex justify-content-between align-items-center mb-1 mt-2">
                         <span id="ca-temp" class="small text-muted">-</span>
-                        <span class="badge bg-dark border border-secondary text-light">Weather</span>
+                        <span class="badge bg-dark border border-secondary text-light px-2" style="font-size: 0.7rem;">WEATHER</span>
                         <span id="cb-temp" class="small text-muted">-</span>
                     </div>
                     
-                    <div class="d-flex justify-content-between align-items-center mb-1">
+                    <div class="d-flex justify-content-between align-items-center mb-1 mt-2">
                         <span id="ca-econ" class="small text-muted">-</span>
-                        <span class="badge bg-dark border border-secondary text-light">GDP & Inflation</span>
+                        <span class="badge bg-dark border border-secondary text-light px-2" style="font-size: 0.7rem;">MACRO (GDP & INF)</span>
                         <span id="cb-econ" class="small text-muted">-</span>
                     </div>
                 </div>
@@ -312,6 +321,85 @@
         document.getElementById('cb-temp').innerText = (riskB.country && riskB.country.temperature) ? `${riskB.country.temperature}°C, Wind: ${riskB.country.wind_speed}km/h` : 'No data';
         document.getElementById('ca-econ').innerText = (riskA.country && riskA.country.gdp) ? `GDP: $${(riskA.country.gdp / 1e9).toFixed(1)}B, Inf: ${riskA.country.inflation}%` : 'No data';
         document.getElementById('cb-econ').innerText = (riskB.country && riskB.country.gdp) ? `GDP: $${(riskB.country.gdp / 1e9).toFixed(1)}B, Inf: ${riskB.country.inflation}%` : 'No data';
+
+        // Recommendation Logic
+        const recBox = document.getElementById('recommendation-box');
+        const recText = document.getElementById('recommendation-text');
+        recBox.classList.remove('d-none');
+        
+        let scoreA = parseFloat(riskA.total_score);
+        let scoreB = parseFloat(riskB.total_score);
+        let nameA = riskA.country ? riskA.country.name : 'Country A';
+        let nameB = riskB.country ? riskB.country.name : 'Country B';
+        
+        let wA = parseFloat(riskA.weather_risk); let wB = parseFloat(riskB.weather_risk);
+        let eA = parseFloat(riskA.economic_risk); let eB = parseFloat(riskB.economic_risk);
+        let sA = parseFloat(riskA.sentiment_risk); let sB = parseFloat(riskB.sentiment_risk);
+        
+        // Build detailed reasoning
+        let bestCountry = scoreA < scoreB ? nameA : (scoreB < scoreA ? nameB : null);
+        let bestScore = scoreA < scoreB ? scoreA : scoreB;
+        let altName = scoreA < scoreB ? nameB : nameA;
+        let altScore = scoreA < scoreB ? scoreB : scoreA;
+        
+        if (bestCountry) {
+            let reasons = [];
+            
+            // Check weather
+            if ((bestCountry === nameA && wA < wB) || (bestCountry === nameB && wB < wA)) {
+                reasons.push('better weather conditions');
+            }
+            // Check economic
+            if ((bestCountry === nameA && eA < eB) || (bestCountry === nameB && eB < eA)) {
+                reasons.push('stronger economic stability');
+            }
+            // Check sentiment
+            if ((bestCountry === nameA && sA < sB) || (bestCountry === nameB && sB < sA)) {
+                reasons.push('more positive intelligence news');
+            }
+            
+            let reasonText = "";
+            if (reasons.length > 0) {
+                reasonText = " It primarily benefits from " + reasons.join(' and ') + " compared to " + altName + ".";
+            }
+            
+            // Highlight trade-offs (where the alternative country is actually better)
+            let tradeoff = "";
+            let tradeReasons = [];
+            if ((bestCountry === nameA && wA > wB) || (bestCountry === nameB && wB > wA)) tradeReasons.push('weather');
+            if ((bestCountry === nameA && eA > eB) || (bestCountry === nameB && eB > eA)) tradeReasons.push('economy');
+            if ((bestCountry === nameA && sA > sB) || (bestCountry === nameB && sB > sA)) tradeReasons.push('news sentiment');
+            
+            if (tradeReasons.length > 0) {
+                tradeoff = ` <em>However, please note that ${altName} actually has better ${tradeReasons.join(' and ')}.</em>`;
+            }
+
+            recText.innerHTML = `<strong>${bestCountry}</strong> is the recommended choice with a lower overall risk (${bestScore}% vs ${altScore}%).${reasonText}${tradeoff}`;
+            
+            // Set style for clear recommendation
+            recBox.style.backgroundColor = 'rgba(16, 185, 129, 0.1)';
+            recBox.style.borderColor = '#10b981';
+            recBox.style.color = '#10b981';
+            recBox.innerHTML = `
+                <i class="fa-solid fa-circle-check fs-4 me-3"></i>
+                <div>
+                    <h6 class="alert-heading fw-bold mb-1">Recommendation: ${bestCountry}</h6>
+                    <span id="recommendation-text" class="small">${recText.innerHTML}</span>
+                </div>
+            `;
+        } else {
+            recText.innerHTML = `Both countries share an identical risk score of ${scoreA}%. Consider manually evaluating their individual risk breakdown below to make a final decision.`;
+            recBox.style.backgroundColor = 'rgba(245, 158, 11, 0.1)';
+            recBox.style.borderColor = '#f59e0b';
+            recBox.style.color = '#f59e0b';
+            recBox.innerHTML = `
+                <i class="fa-solid fa-circle-exclamation fs-4 me-3"></i>
+                <div>
+                    <h6 class="alert-heading fw-bold mb-1">Recommendation: Tie</h6>
+                    <span id="recommendation-text" class="small">${recText.innerHTML}</span>
+                </div>
+            `;
+        }
 
         renderChart(riskA, riskB);
     }

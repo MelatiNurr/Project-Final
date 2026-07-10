@@ -90,7 +90,8 @@ class FetchApiDataCommand extends Command
             if ($type === 'all' || $type === 'news') {
                 // 3. Fetch News & Calculate Sentiment
                 try {
-                    $news = $newsService->getNews($country->name . ' economy logistics', strtolower($country->code));
+                    // Broadened search query to get more results
+                    $news = $newsService->getNews($country->name . ' (economy OR supply OR logistics OR trade)', strtolower($country->code));
                     $articles = $news['articles'] ?? [];
                     
                     if (empty($articles)) {

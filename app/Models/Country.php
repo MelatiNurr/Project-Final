@@ -8,5 +8,18 @@ class Country extends Model
 {
     protected $guarded = [];
 
-    //
+    public function riskScores()
+    {
+        return $this->hasMany(RiskScore::class);
+    }
+
+    public function articles()
+    {
+        return $this->hasMany(Article::class);
+    }
+
+    public function ports()
+    {
+        return $this->hasMany(Port::class);
+    }
 }

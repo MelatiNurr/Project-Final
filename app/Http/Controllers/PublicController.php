@@ -7,6 +7,14 @@ use App\Models\Country;
 
 class PublicController extends Controller
 {
+    public function countriesIndex()
+    {
+        $countries = Country::with(['riskScores' => function($q) {
+            $q->latest()->limit(1);
+        }])->get();
+        return view('countries', compact('countries'));
+    }
+
     public function showCountry($id)
     {
         $country = Country::with(['riskScores' => function($q) {

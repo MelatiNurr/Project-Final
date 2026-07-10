@@ -83,6 +83,11 @@
                         <i class="fa-solid fa-newspaper me-2"></i> Intelligence News
                     </a>
                 </li>
+                <li class="nav-item">
+                    <a href="/countries" class="nav-link text-white {{ request()->is('countries*') || request()->is('country*') ? 'active bg-primary' : 'opacity-75 hover-opacity-100' }}">
+                        <i class="fa-solid fa-flag text-warning me-2"></i> Country Profiles
+                    </a>
+                </li>
             </ul>
             <hr class="border-secondary">
             <a href="/login" class="nav-link text-warning fw-bold opacity-75 hover-opacity-100 p-2">
