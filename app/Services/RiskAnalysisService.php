@@ -65,16 +65,16 @@ class RiskAnalysisService
             $wind = $weatherData['current']['wind_speed_10m'] ?? 0;
             $precip = $weatherData['current']['precipitation'] ?? 0;
             
-            if ($wind > 60 || $precip > 50) $weatherRisk = 100;
-            elseif ($wind > 40 || $precip > 20) $weatherRisk = 50;
-            elseif ($wind > 20) $weatherRisk = 20;
+            if ($wind > 30 || $precip > 20) $weatherRisk = 100;
+            elseif ($wind > 10 || $precip > 5) $weatherRisk = 60;
+            elseif ($wind > 3) $weatherRisk = 30;
         }
 
         // 2. Economic Risk (0-100) based on Inflation
         $economicRisk = 0;
-        if ($inflation > 10) $economicRisk = 100;
-        elseif ($inflation > 5) $economicRisk = 60;
-        elseif ($inflation < 0) $economicRisk = 80; // Deflation is also bad
+        if ($inflation > 8) $economicRisk = 100;
+        elseif ($inflation > 2.5) $economicRisk = 60;
+        elseif ($inflation < 1) $economicRisk = 80; // Too low/deflation is risky
         else $economicRisk = 20;
 
         // 3. Sentiment Risk (0-100)

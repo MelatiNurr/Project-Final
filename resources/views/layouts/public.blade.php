@@ -61,31 +61,39 @@
     </style>
 </head>
 <body>
-    
-    <nav class="navbar navbar-expand-lg navbar-dark sticky-top">
-        <div class="container-fluid px-4">
-            <a class="navbar-brand fw-bold d-flex align-items-center gap-2" href="/">
+    <div class="d-flex" style="min-height: 100vh;">
+        <!-- Sidebar -->
+        <div class="sidebar border-end border-secondary p-3 d-flex flex-column" style="width: 260px; background-color: rgba(15, 23, 42, 0.95); backdrop-filter: blur(10px);">
+            <a class="navbar-brand fw-bold d-flex align-items-center gap-2 mb-5 mt-2 text-decoration-none" href="/">
                 <i class="fa-solid fa-globe text-info fs-3"></i>
-                <div class="d-flex flex-column">
-                    <span class="lh-1">MelatiChain</span>
+                <div class="d-flex flex-column text-white">
+                    <span class="lh-1 fs-5">MelatiChain</span>
                     <span class="text-info fw-normal opacity-75" style="font-size: 0.65rem; letter-spacing: 1px;">RISK INTELLIGENCE</span>
                 </div>
             </a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ms-auto gap-3">
-                    <li class="nav-item"><a class="nav-link active" href="#"><i class="fa-solid fa-chart-line"></i> Dashboard</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#"><i class="fa-solid fa-newspaper"></i> Intelligence</a></li>
-                    <li class="nav-item"><a class="nav-link text-warning" href="/login"><i class="fa-solid fa-lock"></i> Admin Portal</a></li>
-                </ul>
-            </div>
+            
+            <ul class="nav nav-pills flex-column mb-auto gap-2">
+                <li class="nav-item">
+                    <a href="/" class="nav-link text-white {{ request()->is('/') ? 'active bg-primary' : 'opacity-75 hover-opacity-100' }}">
+                        <i class="fa-solid fa-chart-line me-2"></i> Dashboard
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="/intelligence" class="nav-link text-white {{ request()->is('intelligence') ? 'active bg-primary' : 'opacity-75 hover-opacity-100' }}">
+                        <i class="fa-solid fa-newspaper me-2"></i> Intelligence News
+                    </a>
+                </li>
+            </ul>
+            <hr class="border-secondary">
+            <a href="/login" class="nav-link text-warning fw-bold opacity-75 hover-opacity-100 p-2">
+                <i class="fa-solid fa-lock me-2"></i> Admin Portal
+            </a>
         </div>
-    </nav>
 
-    <div class="container-fluid px-4 py-4">
-        @yield('content')
+        <!-- Main Content -->
+        <div class="flex-grow-1 p-4" style="height: 100vh; overflow-y: auto; background-color: #0f172a;">
+            @yield('content')
+        </div>
     </div>
 
     <!-- Bootstrap JS -->

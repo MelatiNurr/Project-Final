@@ -37,4 +37,16 @@ class ApiController extends Controller
 
         return response()->json($query->limit(20)->get());
     }
+
+    public function syncMetrics()
+    {
+        \Illuminate\Support\Facades\Artisan::call('api:fetch', ['--type' => 'metrics']);
+        return response()->json(['status' => 'success', 'message' => 'Weather and Economic data synced successfully.']);
+    }
+
+    public function syncNews()
+    {
+        \Illuminate\Support\Facades\Artisan::call('api:fetch', ['--type' => 'news']);
+        return response()->json(['status' => 'success', 'message' => 'Intelligence News synced successfully.']);
+    }
 }

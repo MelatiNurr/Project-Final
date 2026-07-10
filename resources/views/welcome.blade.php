@@ -1,6 +1,13 @@
 @extends('layouts.public')
 
 @section('content')
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h4 class="fw-bold mb-0 text-light"><i class="fa-solid fa-satellite-dish text-primary me-2"></i> Global Operations</h4>
+    <button id="syncMetricsBtn" class="btn btn-outline-info shadow-sm fw-bold" onclick="syncMetrics()">
+        <i class="fa-solid fa-rotate me-1"></i> Sync Metrics
+    </button>
+</div>
+
 <div class="row g-4 mb-4">
     <div class="col-md-3">
         <div class="card h-100 p-4">
@@ -68,6 +75,43 @@
                 <span class="badge bg-secondary">Live</span>
             </div>
             <div id="map"></div>
+
+            <!-- Detail Panel -->
+            <div id="country-detail-panel" class="d-none mt-4 border-top border-secondary pt-3">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h5 class="fw-bold mb-0" id="cd-name">Country Name</h5>
+                    <div>
+                        <span class="badge bg-primary me-2">Selected Region</span>
+                        <a href="#" id="cd-profile-link" class="btn btn-sm btn-outline-info"><i class="fa-solid fa-arrow-right me-1"></i> View Full Profile</a>
+                    </div>
+                </div>
+                <div class="row g-3">
+                    <div class="col-md-3">
+                        <div class="p-3 bg-dark rounded border border-secondary h-100">
+                            <span class="d-block small text-muted mb-1"><i class="fa-solid fa-cloud text-info me-1"></i> Temperature</span>
+                            <span class="fw-bold fs-5 text-light" id="cd-temp">-</span>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="p-3 bg-dark rounded border border-secondary h-100">
+                            <span class="d-block small text-muted mb-1"><i class="fa-solid fa-wind text-info me-1"></i> Wind Speed</span>
+                            <span class="fw-bold fs-5 text-light" id="cd-wind">-</span>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="p-3 bg-dark rounded border border-secondary h-100">
+                            <span class="d-block small text-muted mb-1"><i class="fa-solid fa-money-bill-wave text-success me-1"></i> GDP & Inflation</span>
+                            <span class="fw-bold fs-6 text-light" id="cd-econ">-</span>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="p-3 bg-dark rounded border border-secondary h-100">
+                            <span class="d-block small text-muted mb-1"><i class="fa-solid fa-shield-halved text-danger me-1"></i> Overall Risk</span>
+                            <span class="fw-bold fs-5 text-danger" id="cd-risk">-</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
     <div class="col-lg-4">
@@ -100,9 +144,27 @@
                         <span class="badge bg-dark border border-secondary text-light">Total Score</span>
                         <span id="cb-name" class="fw-bold text-warning">Country B</span>
                     </div>
-                    <div class="progress mt-2" style="height: 12px; background-color: #334155;">
+                    <div class="progress mt-2 mb-3" style="height: 12px; background-color: #334155;">
                         <div id="ca-risk-bar" class="progress-bar bg-info" role="progressbar" style="width: 0%"></div>
                         <div id="cb-risk-bar" class="progress-bar bg-warning" role="progressbar" style="width: 0%; right: 0; position: absolute;"></div>
+                    </div>
+                    
+                    <div class="d-flex justify-content-between align-items-center mb-1">
+                        <span id="ca-currency" class="small fw-bold text-info">-</span>
+                        <span class="badge bg-dark border border-secondary text-light">Exchange Rate (USD)</span>
+                        <span id="cb-currency" class="small fw-bold text-warning">-</span>
+                    </div>
+                    
+                    <div class="d-flex justify-content-between align-items-center mb-1 mt-2">
+                        <span id="ca-temp" class="small text-muted">-</span>
+                        <span class="badge bg-dark border border-secondary text-light">Weather</span>
+                        <span id="cb-temp" class="small text-muted">-</span>
+                    </div>
+                    
+                    <div class="d-flex justify-content-between align-items-center mb-1">
+                        <span id="ca-econ" class="small text-muted">-</span>
+                        <span class="badge bg-dark border border-secondary text-light">GDP & Inflation</span>
+                        <span id="cb-econ" class="small text-muted">-</span>
                     </div>
                 </div>
             </div>
@@ -202,9 +264,21 @@
                     weight: 1,
                     opacity: 0.5,
                     fillOpacity: 0.4
-                }).addTo(map).bindPopup(`<b>${risk.country.name}</b><br>Risk: ${risk.total_score}%`);
+                }).addTo(map)
+                  .bindPopup(`<b>${risk.country.name}</b><br>Risk: ${risk.total_score}% (Click for details)`)
+                  .on('click', () => showCountryDetail(risk));
             }
         });
+    }
+
+    function showCountryDetail(risk) {
+        document.getElementById('country-detail-panel').classList.remove('d-none');
+        document.getElementById('cd-name').innerText = risk.country.name + ' Operations Profile';
+        document.getElementById('cd-temp').innerText = risk.country.temperature ? risk.country.temperature + ' °C' : 'N/A';
+        document.getElementById('cd-wind').innerText = risk.country.wind_speed ? risk.country.wind_speed + ' km/h' : 'N/A';
+        document.getElementById('cd-econ').innerText = risk.country.gdp ? `$${(risk.country.gdp/1e9).toFixed(1)}B | ${risk.country.inflation}%` : 'N/A';
+        document.getElementById('cd-risk').innerText = risk.total_score + '%';
+        document.getElementById('cd-profile-link').href = '/country/' + risk.country.id;
     }
 
     // Comparison Logic
@@ -228,6 +302,16 @@
         
         document.getElementById('ca-risk-bar').style.width = (parseFloat(riskA.total_score) / totalSum * 100) + '%';
         document.getElementById('cb-risk-bar').style.width = (parseFloat(riskB.total_score) / totalSum * 100) + '%';
+
+        // Update Currency
+        document.getElementById('ca-currency').innerText = (riskA.country && riskA.country.currency) ? `1 USD = ${parseFloat(riskA.country.exchange_rate).toFixed(2)} ${riskA.country.currency}` : '-';
+        document.getElementById('cb-currency').innerText = (riskB.country && riskB.country.currency) ? `1 USD = ${parseFloat(riskB.country.exchange_rate).toFixed(2)} ${riskB.country.currency}` : '-';
+        
+        // Update Raw Data
+        document.getElementById('ca-temp').innerText = (riskA.country && riskA.country.temperature) ? `${riskA.country.temperature}°C, Wind: ${riskA.country.wind_speed}km/h` : 'No data';
+        document.getElementById('cb-temp').innerText = (riskB.country && riskB.country.temperature) ? `${riskB.country.temperature}°C, Wind: ${riskB.country.wind_speed}km/h` : 'No data';
+        document.getElementById('ca-econ').innerText = (riskA.country && riskA.country.gdp) ? `GDP: $${(riskA.country.gdp / 1e9).toFixed(1)}B, Inf: ${riskA.country.inflation}%` : 'No data';
+        document.getElementById('cb-econ').innerText = (riskB.country && riskB.country.gdp) ? `GDP: $${(riskB.country.gdp / 1e9).toFixed(1)}B, Inf: ${riskB.country.inflation}%` : 'No data';
 
         renderChart(riskA, riskB);
     }
@@ -275,6 +359,23 @@
                 }
             }
         });
+    }
+
+    async function syncMetrics() {
+        const btn = document.getElementById('syncMetricsBtn');
+        btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin me-1"></i> Syncing...';
+        btn.disabled = true;
+
+        try {
+            const res = await fetch('/api/sync-metrics', { method: 'POST' });
+            const data = await res.json();
+            alert(data.message);
+            location.reload(); 
+        } catch (e) {
+            alert('Failed to sync metrics');
+            btn.innerHTML = '<i class="fa-solid fa-rotate me-1"></i> Sync Metrics';
+            btn.disabled = false;
+        }
     }
 
     // Init App

@@ -12,3 +12,5 @@ Route::get('/countries', [ApiController::class, 'countries']);
 Route::get('/risk', [ApiController::class, 'risk']);
 Route::get('/ports', [ApiController::class, 'ports']);
 Route::get('/news', [ApiController::class, 'news']);
+Route::post('/sync-metrics', [ApiController::class, 'syncMetrics']);
+Route::post('/sync-news', [ApiController::class, 'syncNews']);

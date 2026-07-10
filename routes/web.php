@@ -8,6 +8,13 @@ Route::get('/', function () {
     return view('welcome');
 });
 
+Route::get('/intelligence', function () {
+    return view('intelligence');
+});
+
+Route::get('/country/{id}', [App\Http\Controllers\PublicController::class, 'showCountry'])->name('country.show');
+
+
 Route::get('/login', [AuthController::class, 'showLogin'])->name('login')->middleware('guest');
 Route::post('/login', [AuthController::class, 'login'])->middleware('guest');
 Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth');
