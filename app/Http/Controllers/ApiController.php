@@ -12,7 +12,7 @@ class ApiController extends Controller
 {
     public function countries()
     {
-        return response()->json(Country::all());
+        return response()->json(Country::where('is_active', true)->get());
     }
 
     public function risk()
@@ -24,7 +24,9 @@ class ApiController extends Controller
 
     public function ports()
     {
-        return response()->json(Port::with('country')->get());
+        return response()->json(Port::whereHas('country', function($q) {
+            $q->where('is_active', true);
+        })->with('country')->get());
     }
 
     public function news(Request $request)
@@ -38,15 +40,32 @@ class ApiController extends Controller
         return response()->json($query->limit(20)->get());
     }
 
-    public function syncMetrics()
+    public function currency()
     {
-        \Illuminate\Support\Facades\Artisan::call('api:fetch', ['--type' => 'metrics']);
+        return response()->json(Country::where('is_active', true)->select('id', 'name', 'code', 'currency', 'exchange_rate')->get());
+    }
+
+    public function syncMetrics(Request $request)
+    {
+        set_time_limit(0); // Prevent timeout
+        $params = ['--type' => 'metrics'];
+        if ($request->has('country_id')) {
+            $params['--country'] = $request->country_id;
+        }
+        
+        \Illuminate\Support\Facades\Artisan::call('api:fetch', $params);
         return response()->json(['status' => 'success', 'message' => 'Weather and Economic data synced successfully.']);
     }
 
-    public function syncNews()
+    public function syncNews(Request $request)
     {
-        \Illuminate\Support\Facades\Artisan::call('api:fetch', ['--type' => 'news']);
+        set_time_limit(0); // Prevent timeout
+        $params = ['--type' => 'news'];
+        if ($request->has('country_id')) {
+            $params['--country'] = $request->country_id;
+        }
+        
+        \Illuminate\Support\Facades\Artisan::call('api:fetch', $params);
         return response()->json(['status' => 'success', 'message' => 'Intelligence News synced successfully.']);
     }
 }

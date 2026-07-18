@@ -25,22 +25,29 @@
         <div class="card h-100 p-4">
             <h5 class="fw-bold mb-4 border-bottom border-secondary pb-2"><i class="fa-solid fa-chart-pie text-warning me-2"></i> Macro Environment</h5>
             <div class="row g-4">
-                <div class="col-sm-4 text-center">
-                    <div class="p-3 bg-dark rounded border border-secondary">
+                <div class="col-sm-3 text-center">
+                    <div class="p-3 bg-dark rounded border border-secondary h-100">
+                        <i class="fa-solid fa-users text-primary fs-1 mb-3 opacity-75"></i>
+                        <h6 class="text-muted small fw-bold text-uppercase mb-1">Population</h6>
+                        <span class="fs-4 fw-bold text-light">{{ $country->population ? number_format($country->population / 1e6, 1) . 'M' : 'N/A' }}</span>
+                    </div>
+                </div>
+                <div class="col-sm-3 text-center">
+                    <div class="p-3 bg-dark rounded border border-secondary h-100">
                         <i class="fa-solid fa-money-bill-wave text-success fs-1 mb-3 opacity-75"></i>
                         <h6 class="text-muted small fw-bold text-uppercase mb-1">GDP</h6>
                         <span class="fs-4 fw-bold text-light">${{ number_format($country->gdp / 1e9, 1) }}B</span>
                     </div>
                 </div>
-                <div class="col-sm-4 text-center">
-                    <div class="p-3 bg-dark rounded border border-secondary">
+                <div class="col-sm-3 text-center">
+                    <div class="p-3 bg-dark rounded border border-secondary h-100">
                         <i class="fa-solid fa-arrow-trend-up text-danger fs-1 mb-3 opacity-75"></i>
                         <h6 class="text-muted small fw-bold text-uppercase mb-1">Inflation</h6>
                         <span class="fs-4 fw-bold text-light">{{ $country->inflation }}%</span>
                     </div>
                 </div>
-                <div class="col-sm-4 text-center">
-                    <div class="p-3 bg-dark rounded border border-secondary">
+                <div class="col-sm-3 text-center">
+                    <div class="p-3 bg-dark rounded border border-secondary h-100">
                         <i class="fa-solid fa-coins text-info fs-1 mb-3 opacity-75"></i>
                         <h6 class="text-muted small fw-bold text-uppercase mb-1">Currency ({{ $country->currency }})</h6>
                         <span class="fs-5 fw-bold text-light">1 USD = {{ number_format($country->exchange_rate, 2) }}</span>

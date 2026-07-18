@@ -13,7 +13,7 @@ use App\Services\RiskAnalysisService;
 
 class FetchApiDataCommand extends Command
 {
-    protected $signature = 'api:fetch {--type=all : The type of data to fetch (all, metrics, news)}';
+    protected $signature = 'api:fetch {--type=all : The type of data to fetch (all, metrics, news)} {--country= : The specific country ID to fetch data for}';
     protected $description = 'Fetch and cache data from external APIs for countries and calculate risk scores.';
 
     public function handle(
@@ -24,9 +24,27 @@ class FetchApiDataCommand extends Command
         \App\Services\ExchangeRateService $exchangeService
     ) {
         $type = $this->option('type');
-        $this->info("Starting API Data Fetch (Type: {$type})...");
+        $countryId = $this->option('country');
+        
+        $this->info("Starting API Data Fetch (Type: {$type}" . ($countryId ? ", Country ID: {$countryId}" : "") . ")...");
 
-        $countries = Country::all();
+        if ($countryId) {
+            $countries = Country::where('id', $countryId)->where('is_active', true)->get();
+        } else {
+            $countries = Country::where('is_active', true)->get();
+        }
+
+        $globalPorts = [];
+        if ($type === 'all' || $type === 'metrics') {
+            $this->info("Fetching World Port Index data...");
+            try {
+                $portService = app(\App\Services\WorldPortIndexService::class);
+                $globalPorts = $portService->getPorts();
+                $this->info("Successfully fetched " . count($globalPorts) . " global ports.");
+            } catch (\Exception $e) {
+                $this->error("Failed to fetch world ports.");
+            }
+        }
 
         // Auto-seed some default countries if the database is completely empty
         if ($countries->isEmpty()) {
@@ -83,6 +101,52 @@ class FetchApiDataCommand extends Command
                 } catch (\Exception $e) {
                     $this->error("   - Failed to fetch exchange rates.");
                 }
+
+                // 3. Sync Ports
+                try {
+                    if (!empty($globalPorts)) {
+                        $countryPorts = array_filter($globalPorts, function($port) use ($country) {
+                            return isset($port['country']) && (
+                                stripos($port['country'], $country->name) !== false || 
+                                ($country->code === 'US' && stripos($port['country'], 'United States') !== false) ||
+                                ($country->code === 'GB' && stripos($port['country'], 'United Kingdom') !== false)
+                            );
+                        });
+                        // Sort ports by size to get the largest ones first
+                        $sizeWeights = [
+                            'Very Large' => 5,
+                            'Large' => 4,
+                            'Medium' => 3,
+                            'Small' => 2,
+                            'Very Small' => 1
+                        ];
+                        
+                        usort($countryPorts, function($a, $b) use ($sizeWeights) {
+                            $weightA = $sizeWeights[$a['port_size'] ?? ''] ?? 0;
+                            $weightB = $sizeWeights[$b['port_size'] ?? ''] ?? 0;
+                            return $weightB <=> $weightA;
+                        });
+
+                        // Limit to top 10 largest ports per country
+                        $countryPorts = array_slice($countryPorts, 0, 10);
+
+                        if (count($countryPorts) > 0) {
+                            Port::where('country_id', $country->id)->delete();
+                            foreach ($countryPorts as $p) {
+                                Port::create([
+                                    'country_id' => $country->id,
+                                    'name' => substr($p['wpi_port_name'] ?? 'Unknown Port', 0, 255),
+                                    'latitude' => $p['latitude'] ?? 0,
+                                    'longitude' => $p['longitude'] ?? 0,
+                                    'status' => 'active'
+                                ]);
+                            }
+                            $this->info("   - Synced " . count($countryPorts) . " ports.");
+                        }
+                    }
+                } catch (\Exception $e) {
+                    $this->error("   - Failed to sync ports: " . $e->getMessage());
+                }
             }
 
             $averageSentiment = \App\Models\Article::where('country_id', $country->id)->avg('sentiment_score') ?? 0;
@@ -90,8 +154,8 @@ class FetchApiDataCommand extends Command
             if ($type === 'all' || $type === 'news') {
                 // 3. Fetch News & Calculate Sentiment
                 try {
-                    // Broadened search query to get more results
-                    $news = $newsService->getNews($country->name . ' (economy OR supply OR logistics OR trade)', strtolower($country->code));
+                    // Simplified search query to get more results without API errors
+                    $news = $newsService->getNews($country->name . ' economy', strtolower($country->code));
                     $articles = $news['articles'] ?? [];
                     
                     if (empty($articles)) {

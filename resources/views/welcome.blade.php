@@ -2,7 +2,7 @@
 
 @section('content')
 <div class="d-flex justify-content-between align-items-center mb-4">
-    <h4 class="fw-bold mb-0 text-light"><i class="fa-solid fa-satellite-dish text-primary me-2"></i> Global Operations</h4>
+    <h4 class="fw-bold mb-0 text-transparent bg-clip-text" style="background: linear-gradient(135deg, #e2e8f0, #94a3b8); -webkit-background-clip: text; -webkit-text-fill-color: transparent;"><i class="fa-solid fa-satellite-dish text-primary me-2"></i> Global Operations Platform</h4>
     <button id="syncMetricsBtn" class="btn btn-outline-info shadow-sm fw-bold" onclick="syncMetrics()">
         <i class="fa-solid fa-rotate me-1"></i> Sync Metrics
     </button>
@@ -68,10 +68,10 @@
 </div>
 
 <div class="row g-4 mb-4">
-    <div class="col-lg-8">
+    <div class="col-lg-12">
         <div class="card p-3 h-100">
             <div class="d-flex justify-content-between align-items-center mb-3 px-2">
-                <h5 class="card-title fw-bold mb-0"><i class="fa-solid fa-map-location-dot text-primary me-2"></i> Supply Chain Risk Map</h5>
+                <h5 class="card-title fw-bold mb-0" style="background: linear-gradient(90deg, #38bdf8, #818cf8); -webkit-background-clip: text; -webkit-text-fill-color: transparent;"><i class="fa-solid fa-map-location-dot text-primary me-2"></i> Supply Chain Risk Map</h5>
                 <span class="badge bg-secondary">Live</span>
             </div>
             <div id="map"></div>
@@ -114,66 +114,89 @@
             </div>
         </div>
     </div>
-    <div class="col-lg-4">
-        <div class="card p-4 h-100">
+</div>
+<div class="row g-4 mb-4">
+    <div class="col-lg-12">
+        <div class="card p-4 h-100" style="background: linear-gradient(145deg, rgba(30, 41, 59, 0.9), rgba(15, 23, 42, 0.9)); border-top: 3px solid #38bdf8; box-shadow: 0 10px 30px rgba(0,0,0,0.5);">
             <h5 class="card-title fw-bold mb-4"><i class="fa-solid fa-code-compare text-warning me-2"></i> Country Comparison</h5>
             
-            <div class="mb-3">
-                <label class="form-label text-muted small fw-semibold">Country A (Base)</label>
-                <select id="country-a-select" class="form-select bg-dark text-light border-secondary shadow-sm">
-                    <option value="">Loading...</option>
-                </select>
-            </div>
-            
-            <div class="mb-4">
-                <label class="form-label text-muted small fw-semibold">Country B (Target)</label>
-                <select id="country-b-select" class="form-select bg-dark text-light border-secondary shadow-sm">
-                    <option value="">Loading...</option>
-                </select>
-            </div>
-
-            <button class="btn btn-primary w-100 mb-4 fw-semibold shadow" onclick="compareCountries()"><i class="fa-solid fa-bolt me-1"></i> Analyze Risk Delta</button>
-
-            <div id="comparison-results" class="d-none mt-4">
-                <!-- AI Recommendation Box -->
-                <div id="recommendation-box" class="alert alert-success d-none d-flex align-items-center mb-4" role="alert" style="background-color: rgba(16, 185, 129, 0.1); border-color: #10b981; color: #10b981;">
-                    <i class="fa-solid fa-circle-check fs-4 me-3"></i>
-                    <div>
-                        <h6 class="alert-heading fw-bold mb-1">Recommendation</h6>
-                        <span id="recommendation-text" class="small"></span>
-                    </div>
+            <div class="row g-3 align-items-end mb-4">
+                <div class="col-md-5">
+                    <label class="form-label text-muted small fw-semibold">Country A (Base)</label>
+                    <select id="country-a-select" class="form-select bg-dark text-light border-secondary shadow-sm">
+                        <option value="">Loading...</option>
+                    </select>
                 </div>
+                <div class="col-md-2 text-center">
+                    <button class="btn btn-primary w-100 fw-bold shadow" onclick="compareCountries()"><i class="fa-solid fa-bolt me-1"></i> Compare</button>
+                </div>
+                <div class="col-md-5">
+                    <label class="form-label text-muted small fw-semibold">Country B (Target)</label>
+                    <select id="country-b-select" class="form-select bg-dark text-light border-secondary shadow-sm">
+                        <option value="">Loading...</option>
+                    </select>
+                </div>
+            </div>
 
-                <h6 class="fw-bold mb-3 border-bottom border-secondary pb-2">Risk Breakdown</h6>
-                <canvas id="comparisonChart" height="250"></canvas>
-                
-                <div class="mt-4 pt-3 border-top border-secondary">
-                    <div class="d-flex justify-content-between align-items-center mb-1">
-                        <span id="ca-name" class="fw-bold text-info">Country A</span>
-                        <span class="badge bg-dark border border-secondary text-light">Total Score</span>
-                        <span id="cb-name" class="fw-bold text-warning">Country B</span>
-                    </div>
-                    <div class="progress mt-2 mb-3" style="height: 12px; background-color: #334155; border-radius: 6px; overflow: hidden; position: relative;">
-                        <div id="ca-risk-bar" class="progress-bar bg-info" role="progressbar" style="width: 0%; height: 100%;"></div>
-                        <div id="cb-risk-bar" class="progress-bar bg-warning" role="progressbar" style="width: 0%; height: 100%; position: absolute; right: 0;"></div>
+            <div id="comparison-results" class="d-none mt-4 border-top border-secondary pt-4">
+                <div class="row g-4">
+                    <!-- Left: Data Table -->
+                    <div class="col-md-7">
+                        <!-- AI Recommendation Box -->
+                        <div id="recommendation-box" class="alert alert-success d-none d-flex align-items-center mb-4 shadow-sm" role="alert" style="background-color: rgba(16, 185, 129, 0.1); border-color: #10b981; color: #10b981;">
+                            <i class="fa-solid fa-circle-check fs-4 me-3"></i>
+                            <div>
+                                <h6 class="alert-heading fw-bold mb-1">AI Recommendation</h6>
+                                <span id="recommendation-text" class="small"></span>
+                            </div>
+                        </div>
+
+                        <div class="table-responsive rounded border border-secondary">
+                            <table class="table table-dark table-hover align-middle text-center mb-0" style="border-color: #334155;">
+                                <thead>
+                                    <tr style="background-color: #1e293b;">
+                                        <th class="text-start w-25 text-muted small fw-semibold p-3">METRIC</th>
+                                        <th id="ca-name" class="text-info w-25 fw-bold p-3">Country A</th>
+                                        <th id="cb-name" class="text-warning w-25 fw-bold p-3">Country B</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td class="text-start text-muted small fw-semibold p-3"><i class="fa-solid fa-shield-halved me-2"></i> Total Risk</td>
+                                        <td class="p-3"><span id="ca-risk-val" class="fs-5 fw-bold text-info">-</span></td>
+                                        <td class="p-3"><span id="cb-risk-val" class="fs-5 fw-bold text-warning">-</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="text-start text-muted small fw-semibold p-3"><i class="fa-solid fa-money-bill-transfer me-2"></i> Currency (vs USD)</td>
+                                        <td id="ca-currency" class="small p-3">-</td>
+                                        <td id="cb-currency" class="small p-3">-</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="text-start text-muted small fw-semibold p-3"><i class="fa-solid fa-chart-pie me-2"></i> GDP & Inflation</td>
+                                        <td id="ca-econ" class="small p-3">-</td>
+                                        <td id="cb-econ" class="small p-3">-</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="text-start text-muted small fw-semibold p-3"><i class="fa-solid fa-cloud-sun-rain me-2"></i> Weather (Capitals)</td>
+                                        <td id="ca-temp" class="small p-3">-</td>
+                                        <td id="cb-temp" class="small p-3">-</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="text-start text-muted small fw-semibold p-3"><i class="fa-solid fa-anchor me-2"></i> Tracked Ports</td>
+                                        <td class="p-3"><span id="ca-ports" class="badge bg-secondary">-</span></td>
+                                        <td class="p-3"><span id="cb-ports" class="badge bg-secondary">-</span></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                     
-                    <div class="d-flex justify-content-between align-items-center mb-1">
-                        <span id="ca-currency" class="small fw-bold text-info">-</span>
-                        <span class="badge bg-dark border border-secondary text-light px-2" style="font-size: 0.7rem;">EXCHANGE RATE (USD)</span>
-                        <span id="cb-currency" class="small fw-bold text-warning">-</span>
-                    </div>
-                    
-                    <div class="d-flex justify-content-between align-items-center mb-1 mt-2">
-                        <span id="ca-temp" class="small text-muted">-</span>
-                        <span class="badge bg-dark border border-secondary text-light px-2" style="font-size: 0.7rem;">WEATHER</span>
-                        <span id="cb-temp" class="small text-muted">-</span>
-                    </div>
-                    
-                    <div class="d-flex justify-content-between align-items-center mb-1 mt-2">
-                        <span id="ca-econ" class="small text-muted">-</span>
-                        <span class="badge bg-dark border border-secondary text-light px-2" style="font-size: 0.7rem;">MACRO (GDP & INF)</span>
-                        <span id="cb-econ" class="small text-muted">-</span>
+                    <!-- Right: Chart -->
+                    <div class="col-md-5 d-flex flex-column justify-content-center">
+                        <h6 class="fw-bold mb-3 text-muted text-center text-uppercase" style="letter-spacing: 1px; font-size: 0.8rem;">Risk Factor Breakdown</h6>
+                        <div style="height: 250px; position: relative;">
+                            <canvas id="comparisonChart"></canvas>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -246,6 +269,9 @@
 
         selectA.innerHTML = options;
         selectB.innerHTML = options;
+
+        new TomSelect('#country-a-select', { create: false, sortField: { field: "text", direction: "asc" }});
+        new TomSelect('#country-b-select', { create: false, sortField: { field: "text", direction: "asc" }});
     }
 
     function renderMapMarkers() {
@@ -262,20 +288,32 @@
             }).addTo(map).bindPopup(`<b>${port.name}</b><br>Status: ${port.status}`);
         });
 
-        // Plot Country Risks
-        riskData.forEach(risk => {
-            if(risk.country && risk.country.latitude) {
-                let color = risk.total_score > 60 ? '#ef4444' : (risk.total_score > 30 ? '#f59e0b' : '#10b981');
-                L.circleMarker([risk.country.latitude, risk.country.longitude], {
-                    radius: 8 + (risk.total_score / 10),
+        // Plot Countries
+        countriesData.forEach(country => {
+            if(country.latitude) {
+                let risk = riskData.find(r => r.country_id == country.id);
+                let color = '#64748b'; // default neutral gray
+                let radius = 6;
+                let riskText = 'No Data (Run Sync)';
+
+                if (risk) {
+                    color = risk.total_score > 60 ? '#ef4444' : (risk.total_score > 30 ? '#f59e0b' : '#10b981');
+                    radius = 8 + (risk.total_score / 10);
+                    riskText = risk.total_score + '%';
+                }
+
+                L.circleMarker([country.latitude, country.longitude], {
+                    radius: radius,
                     fillColor: color,
                     color: color,
                     weight: 1,
-                    opacity: 0.5,
-                    fillOpacity: 0.4
+                    opacity: risk ? 0.5 : 0.3,
+                    fillOpacity: risk ? 0.4 : 0.2
                 }).addTo(map)
-                  .bindPopup(`<b>${risk.country.name}</b><br>Risk: ${risk.total_score}% (Click for details)`)
-                  .on('click', () => showCountryDetail(risk));
+                  .bindPopup(`<b>${country.name}</b><br>Risk: ${riskText}${risk ? ' (Click for details)' : ''}`)
+                  .on('click', () => {
+                      if(risk) showCountryDetail(risk);
+                  });
             }
         });
     }
@@ -305,12 +343,15 @@
         document.getElementById('ca-name').innerText = riskA.country ? riskA.country.name : 'Unknown';
         document.getElementById('cb-name').innerText = riskB.country ? riskB.country.name : 'Unknown';
 
-        // Update total score bar (split 100% width proportionally)
-        let totalSum = parseFloat(riskA.total_score) + parseFloat(riskB.total_score);
-        if(totalSum === 0) totalSum = 1; // prevent div zero
-        
-        document.getElementById('ca-risk-bar').style.width = (parseFloat(riskA.total_score) / totalSum * 100) + '%';
-        document.getElementById('cb-risk-bar').style.width = (parseFloat(riskB.total_score) / totalSum * 100) + '%';
+        // Update Risk Value
+        document.getElementById('ca-risk-val').innerText = parseFloat(riskA.total_score).toFixed(1) + '%';
+        document.getElementById('cb-risk-val').innerText = parseFloat(riskB.total_score).toFixed(1) + '%';
+
+        // Update Ports Count
+        let caPorts = portsData.filter(p => p.country_id == idA).length;
+        let cbPorts = portsData.filter(p => p.country_id == idB).length;
+        document.getElementById('ca-ports').innerText = caPorts;
+        document.getElementById('cb-ports').innerText = cbPorts;
 
         // Update Currency
         document.getElementById('ca-currency').innerText = (riskA.country && riskA.country.currency) ? `1 USD = ${parseFloat(riskA.country.exchange_rate).toFixed(2)} ${riskA.country.currency}` : '-';
@@ -451,15 +492,33 @@
 
     async function syncMetrics() {
         const btn = document.getElementById('syncMetricsBtn');
-        btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin me-1"></i> Syncing...';
+        btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin me-1"></i> Getting countries...';
         btn.disabled = true;
 
         try {
-            const res = await fetch('/api/sync-metrics', { method: 'POST' });
-            const data = await res.json();
-            alert(data.message);
+            // First, get list of active countries
+            const cRes = await fetch('/api/countries');
+            const countries = await cRes.json();
+            
+            if (countries.length === 0) {
+                alert("No active countries to sync.");
+                btn.innerHTML = '<i class="fa-solid fa-rotate me-1"></i> Sync Metrics';
+                btn.disabled = false;
+                return;
+            }
+
+            // Sync per country sequentially
+            for (let i = 0; i < countries.length; i++) {
+                const c = countries[i];
+                btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin me-1"></i> Syncing ${c.name} (${i+1}/${countries.length})`;
+                await fetch('/api/sync-metrics?country_id=' + c.id, { method: 'POST' });
+            }
+            
+            btn.innerHTML = '<i class="fa-solid fa-check me-1"></i> Done!';
+            alert("Weather and Economic data synced successfully.");
             location.reload(); 
         } catch (e) {
+            console.error(e);
             alert('Failed to sync metrics');
             btn.innerHTML = '<i class="fa-solid fa-rotate me-1"></i> Sync Metrics';
             btn.disabled = false;

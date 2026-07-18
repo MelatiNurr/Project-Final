@@ -12,7 +12,8 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Google Fonts (Inter) -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    
+    <!-- TomSelect CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/tom-select@2.2.2/dist/css/tom-select.bootstrap5.min.css" rel="stylesheet">
     <style>
         body {
             font-family: 'Inter', sans-serif;
@@ -58,16 +59,30 @@
             70% { transform: scale(1); box-shadow: 0 0 0 10px rgba(56, 189, 248, 0); }
             100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(56, 189, 248, 0); }
         }
+        
+        .bg-glow-1 {
+            position: fixed; top: -10%; left: -10%; width: 40vw; height: 40vw;
+            background: radial-gradient(circle, rgba(56,189,248,0.15) 0%, rgba(15,23,42,0) 70%);
+            border-radius: 50%; filter: blur(60px); z-index: -1;
+        }
+        .bg-glow-2 {
+            position: fixed; bottom: -10%; right: -10%; width: 50vw; height: 50vw;
+            background: radial-gradient(circle, rgba(16,185,129,0.1) 0%, rgba(15,23,42,0) 70%);
+            border-radius: 50%; filter: blur(60px); z-index: -1;
+        }
     </style>
 </head>
 <body>
+    <div class="bg-glow-1"></div>
+    <div class="bg-glow-2"></div>
+    
     <div class="d-flex" style="min-height: 100vh;">
         <!-- Sidebar -->
         <div class="sidebar border-end border-secondary p-3 d-flex flex-column" style="width: 260px; background-color: rgba(15, 23, 42, 0.95); backdrop-filter: blur(10px);">
             <a class="navbar-brand fw-bold d-flex align-items-center gap-2 mb-5 mt-2 text-decoration-none" href="/">
                 <i class="fa-solid fa-globe text-info fs-3"></i>
                 <div class="d-flex flex-column text-white">
-                    <span class="lh-1 fs-5">MelatiChain</span>
+                    <span class="lh-1 fs-5">OmniChain</span>
                     <span class="text-info fw-normal opacity-75" style="font-size: 0.65rem; letter-spacing: 1px;">RISK INTELLIGENCE</span>
                 </div>
             </a>
@@ -84,15 +99,16 @@
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a href="/countries" class="nav-link text-white {{ request()->is('countries*') || request()->is('country*') ? 'active bg-primary' : 'opacity-75 hover-opacity-100' }}">
+                    <a href="/countries" class="nav-link text-white {{ request()->is('countries') || request()->is('country*') ? 'active bg-primary' : 'opacity-75 hover-opacity-100' }}">
                         <i class="fa-solid fa-flag text-warning me-2"></i> Country Profiles
                     </a>
                 </li>
+                <li class="nav-item">
+                    <a href="/countries/settings" class="nav-link text-white {{ request()->is('countries/settings') ? 'active bg-primary' : 'opacity-75 hover-opacity-100' }} ps-4 small">
+                        <i class="fa-solid fa-gear me-2"></i> Active Countries Settings
+                    </a>
+                </li>
             </ul>
-            <hr class="border-secondary">
-            <a href="/login" class="nav-link text-warning fw-bold opacity-75 hover-opacity-100 p-2">
-                <i class="fa-solid fa-lock me-2"></i> Admin Portal
-            </a>
         </div>
 
         <!-- Main Content -->
@@ -107,6 +123,8 @@
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- TomSelect JS -->
+    <script src="https://cdn.jsdelivr.net/npm/tom-select@2.2.2/dist/js/tom-select.complete.min.js"></script>
     
     @stack('scripts')
 </body>

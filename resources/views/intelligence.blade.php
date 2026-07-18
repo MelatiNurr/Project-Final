@@ -12,8 +12,8 @@
     <div class="d-flex justify-content-between align-items-center mb-3">
         <h5 class="fw-bold mb-0">Intelligence Filters</h5>
     </div>
-    <div class="d-flex gap-2 flex-wrap" id="country-filters">
-        <button class="btn btn-outline-secondary active" onclick="loadNews(null)">Global (All)</button>
+    <div class="d-flex gap-2 flex-nowrap overflow-x-auto pb-2" id="country-filters" style="scrollbar-width: thin; scrollbar-color: #475569 transparent;">
+        <button class="btn btn-outline-secondary active text-nowrap" onclick="loadNews(null)">Global (All)</button>
         <!-- Country buttons injected here -->
     </div>
 </div>
@@ -41,7 +41,7 @@
             
             allCountries.forEach(c => {
                 const btn = document.createElement('button');
-                btn.className = 'btn btn-outline-secondary';
+                btn.className = 'btn btn-outline-secondary text-nowrap';
                 btn.innerText = c.name;
                 btn.onclick = (e) => {
                     // Update active state
@@ -121,21 +121,43 @@
 
     async function syncData() {
         const btn = document.getElementById('syncBtn');
-        btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin me-2"></i> Initializing Deep Scan...';
         btn.disabled = true;
 
-        try {
-            const res = await fetch('/api/sync-news', { method: 'POST' });
-            const data = await res.json();
-            alert(data.message);
-            loadNews(currentCountryFilter); // Reload news
-            btn.innerHTML = '<i class="fa-solid fa-cloud-arrow-down me-2"></i> Pull Data & News Now';
-            btn.disabled = false;
-        } catch (e) {
-            alert('Error connecting to external APIs.');
-            btn.innerHTML = '<i class="fa-solid fa-cloud-arrow-down me-2"></i> Pull Data & News Now';
-            btn.disabled = false;
+        if (currentCountryFilter) {
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin me-2"></i> Scanning Region...';
+            try {
+                const formData = new FormData();
+                formData.append('country_id', currentCountryFilter);
+                
+                const res = await fetch('/api/sync-news', { method: 'POST', body: formData });
+                const data = await res.json();
+                
+                loadNews(currentCountryFilter); // Reload news
+            } catch (e) {
+                alert('Error connecting to external APIs.');
+            }
+        } else {
+            // Global Sync: Fetch sequentially to avoid timeout
+            for (let i = 0; i < allCountries.length; i++) {
+                btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin me-2"></i> Scanning ${i+1} / ${allCountries.length}...`;
+                try {
+                    const formData = new FormData();
+                    formData.append('country_id', allCountries[i].id);
+                    
+                    await fetch('/api/sync-news', { method: 'POST', body: formData });
+                    
+                    // Small delay to respect rate limit (1 second)
+                    await new Promise(r => setTimeout(r, 1000));
+                } catch (e) {
+                    console.error('Failed on country ' + allCountries[i].name);
+                }
+            }
+            alert('Global Scan Completed!');
+            loadNews(null);
         }
+
+        btn.innerHTML = '<i class="fa-solid fa-cloud-arrow-down me-2"></i> Pull Data & News Now';
+        btn.disabled = false;
     }
 
     document.addEventListener('DOMContentLoaded', () => {
