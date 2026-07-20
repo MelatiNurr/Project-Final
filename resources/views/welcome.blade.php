@@ -388,34 +388,34 @@
             
             // Check weather
             if ((bestCountry === nameA && wA < wB) || (bestCountry === nameB && wB < wA)) {
-                reasons.push('better weather conditions');
+                reasons.push('kondisi cuaca yang lebih baik');
             }
             // Check economic
             if ((bestCountry === nameA && eA < eB) || (bestCountry === nameB && eB < eA)) {
-                reasons.push('stronger economic stability');
+                reasons.push('stabilitas ekonomi yang lebih kuat');
             }
             // Check sentiment
             if ((bestCountry === nameA && sA < sB) || (bestCountry === nameB && sB < sA)) {
-                reasons.push('more positive intelligence news');
+                reasons.push('sentimen berita yang lebih positif');
             }
             
             let reasonText = "";
             if (reasons.length > 0) {
-                reasonText = " It primarily benefits from " + reasons.join(' and ') + " compared to " + altName + ".";
+                reasonText = " Hal ini didorong oleh " + reasons.join(' dan ') + " dibandingkan dengan " + altName + ".";
             }
             
             // Highlight trade-offs (where the alternative country is actually better)
             let tradeoff = "";
             let tradeReasons = [];
-            if ((bestCountry === nameA && wA > wB) || (bestCountry === nameB && wB > wA)) tradeReasons.push('weather');
-            if ((bestCountry === nameA && eA > eB) || (bestCountry === nameB && eB > eA)) tradeReasons.push('economy');
-            if ((bestCountry === nameA && sA > sB) || (bestCountry === nameB && sB > sA)) tradeReasons.push('news sentiment');
+            if ((bestCountry === nameA && wA > wB) || (bestCountry === nameB && wB > wA)) tradeReasons.push('cuaca');
+            if ((bestCountry === nameA && eA > eB) || (bestCountry === nameB && eB > eA)) tradeReasons.push('ekonomi');
+            if ((bestCountry === nameA && sA > sB) || (bestCountry === nameB && sB > sA)) tradeReasons.push('sentimen berita');
             
             if (tradeReasons.length > 0) {
-                tradeoff = ` <em>However, please note that ${altName} actually has better ${tradeReasons.join(' and ')}.</em>`;
+                tradeoff = ` <em>Namun perlu diperhatikan bahwa ${altName} sebenarnya memiliki keunggulan pada aspek ${tradeReasons.join(' dan ')}.</em>`;
             }
 
-            recText.innerHTML = `<strong>${bestCountry}</strong> is the recommended choice with a lower overall risk (${bestScore}% vs ${altScore}%).${reasonText}${tradeoff}`;
+            recText.innerHTML = `<strong>${bestCountry}</strong> adalah pilihan yang direkomendasikan karena memiliki risiko keseluruhan yang lebih rendah (${bestScore}% vs ${altScore}%).${reasonText}${tradeoff}`;
             
             // Set style for clear recommendation
             recBox.style.backgroundColor = 'rgba(16, 185, 129, 0.1)';
@@ -424,19 +424,19 @@
             recBox.innerHTML = `
                 <i class="fa-solid fa-circle-check fs-4 me-3"></i>
                 <div>
-                    <h6 class="alert-heading fw-bold mb-1">Recommendation: ${bestCountry}</h6>
+                    <h6 class="alert-heading fw-bold mb-1">Rekomendasi: ${bestCountry}</h6>
                     <span id="recommendation-text" class="small">${recText.innerHTML}</span>
                 </div>
             `;
         } else {
-            recText.innerHTML = `Both countries share an identical risk score of ${scoreA}%. Consider manually evaluating their individual risk breakdown below to make a final decision.`;
+            recText.innerHTML = `Kedua negara memiliki skor risiko yang identik yaitu ${scoreA}%. Silakan evaluasi secara manual rincian metrik di bawah ini untuk membuat keputusan akhir.`;
             recBox.style.backgroundColor = 'rgba(245, 158, 11, 0.1)';
             recBox.style.borderColor = '#f59e0b';
             recBox.style.color = '#f59e0b';
             recBox.innerHTML = `
                 <i class="fa-solid fa-circle-exclamation fs-4 me-3"></i>
                 <div>
-                    <h6 class="alert-heading fw-bold mb-1">Recommendation: Tie</h6>
+                    <h6 class="alert-heading fw-bold mb-1">Rekomendasi: Seri</h6>
                     <span id="recommendation-text" class="small">${recText.innerHTML}</span>
                 </div>
             `;
