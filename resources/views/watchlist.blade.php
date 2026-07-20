@@ -3,13 +3,13 @@
 @section('content')
 <div class="mb-4 d-flex justify-content-between align-items-center">
     <div>
-        <h3 class="fw-bold mb-0" style="color: #4a3b32;"><i class="fa-solid fa-flag me-2" style="color: #a98467;"></i> Global Country Profiles</h3>
-        <span class="text-muted">Comprehensive risk & environmental data for all monitored regions</span>
+        <h3 class="fw-bold mb-0" style="color: #4a3b32;"><i class="fa-solid fa-star me-2" style="color: #f59e0b;"></i> My Watchlist</h3>
+        <span class="text-muted">Your curated list of priority countries for active monitoring</span>
     </div>
 </div>
 
 <div class="row g-4">
-    @foreach($countries as $country)
+    @forelse($countries as $country)
         @php
             $risk = $country->riskScores->first();
             $riskScore = $risk ? $risk->total_score : 0;
@@ -82,7 +82,13 @@
                 </div>
             </div>
         </div>
-    @endforeach
+    @empty
+        <div class="col-12 text-center py-5 mt-4">
+            <i class="fa-regular fa-star fs-1 text-muted mb-3 opacity-50"></i>
+            <h5 class="fw-bold text-muted">Your watchlist is empty</h5>
+            <p class="text-secondary">Explore the <a href="{{ route('countries.index') }}" class="text-coksu fw-bold text-decoration-none">Global Country Profiles</a> and click the star icon to add them here.</p>
+        </div>
+    @endforelse
 </div>
 @endsection
 
@@ -91,17 +97,9 @@
     document.querySelectorAll('.toggle-watchlist').forEach(btn => {
         btn.addEventListener('click', async (e) => {
             const countryId = btn.getAttribute('data-id');
-            const icon = btn.querySelector('i');
+            const cardCol = btn.closest('.col-md-6.col-lg-4');
             
-            // Optimistic UI update
-            const isCurrentlyWatched = icon.classList.contains('fa-solid');
-            if (isCurrentlyWatched) {
-                icon.classList.remove('fa-solid', 'text-warning');
-                icon.classList.add('fa-regular', 'text-secondary');
-            } else {
-                icon.classList.remove('fa-regular', 'text-secondary');
-                icon.classList.add('fa-solid', 'text-warning');
-            }
+            if (!confirm('Remove this country from your watchlist?')) return;
 
             try {
                 const res = await fetch('/watchlist/toggle', {
@@ -113,19 +111,24 @@
                     body: JSON.stringify({ country_id: countryId })
                 });
 
-                if (!res.ok) {
-                    throw new Error('Failed to toggle');
+                if (!res.ok) throw new Error('Failed to toggle');
+                
+                // Fade out and remove
+                if (cardCol) {
+                    cardCol.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
+                    cardCol.style.opacity = '0';
+                    cardCol.style.transform = 'scale(0.9)';
+                    setTimeout(() => {
+                        cardCol.remove();
+                        // Check if list is empty
+                        const remaining = document.querySelectorAll('.toggle-watchlist').length;
+                        if (remaining === 0) {
+                            location.reload(); // Reload to show empty state
+                        }
+                    }, 300);
                 }
             } catch (error) {
                 console.error(error);
-                // Revert UI on failure
-                if (isCurrentlyWatched) {
-                    icon.classList.add('fa-solid', 'text-warning');
-                    icon.classList.remove('fa-regular', 'text-secondary');
-                } else {
-                    icon.classList.add('fa-regular', 'text-secondary');
-                    icon.classList.remove('fa-solid', 'text-warning');
-                }
                 alert('An error occurred. Please try again.');
             }
         });

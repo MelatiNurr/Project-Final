@@ -12,7 +12,10 @@ class PublicController extends Controller
         $countries = Country::where('is_active', true)->with(['riskScores' => function($q) {
             $q->latest()->limit(1);
         }])->get();
-        return view('countries', compact('countries'));
+        
+        $watchedIds = auth()->check() ? auth()->user()->watchlists()->pluck('country_id')->toArray() : [];
+        
+        return view('countries', compact('countries', 'watchedIds'));
     }
 
     public function showCountry($id)
@@ -23,35 +26,44 @@ class PublicController extends Controller
             $q->latest('published_at')->limit(6);
         }, 'ports'])->findOrFail($id);
         
-        return view('country', compact('country'));
-    }
-
-    public function countriesSettings()
-    {
-        $countries = Country::orderBy('name')->get();
-        return view('countries-settings', compact('countries'));
-    }
-
-    public function toggleCountryStatus(Request $request)
-    {
-        $country = Country::findOrFail($request->country_id);
-        $country->is_active = !$country->is_active;
-        $country->save();
-
-        return response()->json([
-            'success' => true,
-            'is_active' => $country->is_active,
-            'message' => $country->name . ' has been ' . ($country->is_active ? 'activated' : 'deactivated')
-        ]);
-    }
-    public function bulkToggleCountries(Request $request)
-    {
-        $status = $request->status === 'activate' ? true : false;
-        Country::query()->update(['is_active' => $status]);
+        $watchedIds = auth()->check() ? auth()->user()->watchlists()->pluck('country_id')->toArray() : [];
         
-        return response()->json([
-            'success' => true,
-            'message' => 'All countries have been ' . ($status ? 'activated' : 'deactivated')
+        return view('country', compact('country', 'watchedIds'));
+    }
+
+    public function watchlistIndex()
+    {
+        $user = auth()->user();
+        $countryIds = $user->watchlists()->pluck('country_id');
+        
+        $countries = Country::whereIn('id', $countryIds)
+            ->where('is_active', true)
+            ->with(['riskScores' => function($q) {
+                $q->latest()->limit(1);
+            }])->get();
+            
+        $watchedIds = $countryIds->toArray();
+            
+        return view('watchlist', compact('countries', 'watchedIds'));
+    }
+
+    public function toggleWatchlist(Request $request)
+    {
+        $request->validate([
+            'country_id' => 'required|exists:countries,id'
         ]);
+
+        $user = auth()->user();
+        $exists = $user->watchlists()->where('country_id', $request->country_id)->first();
+
+        if ($exists) {
+            $exists->delete();
+            return response()->json(['status' => 'removed', 'message' => 'Country removed from watchlist']);
+        } else {
+            $user->watchlists()->create([
+                'country_id' => $request->country_id
+            ]);
+            return response()->json(['status' => 'added', 'message' => 'Country added to watchlist']);
+        }
     }
 }

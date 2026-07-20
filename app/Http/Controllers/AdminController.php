@@ -14,8 +14,9 @@ class AdminController extends Controller
     {
         $ports = Port::with('country')->get();
         $articles = Article::with('country')->latest('published_at')->get();
-        $countries = Country::where('is_active', true)->get();
-        return view('admin.dashboard', compact('ports', 'articles', 'countries'));
+        $countries = Country::orderBy('name')->get();
+        $users = User::all();
+        return view('admin.dashboard', compact('ports', 'articles', 'countries', 'users'));
     }
 
     public function storePort(Request $request)
@@ -48,5 +49,75 @@ class AdminController extends Controller
     {
         $article->delete();
         return back()->with('success', 'Article deleted successfully.');
+    }
+
+    public function storeUser(Request $request)
+    {
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'username' => 'required|string|max:255|unique:users',
+            'password' => 'required|string|min:6',
+            'role' => 'required|in:admin,user',
+        ]);
+
+        User::create([
+            'name' => $request->name,
+            'username' => $request->username,
+            'password' => bcrypt($request->password),
+            'role' => $request->role,
+        ]);
+
+        return back()->with('success', 'User created successfully.');
+    }
+
+    public function destroyUser(User $user)
+    {
+        if ($user->id === auth()->id()) {
+            return back()->withErrors(['error' => 'You cannot delete yourself.']);
+        }
+        $user->delete();
+        return back()->with('success', 'User deleted successfully.');
+    }
+
+    public function storeCountry(Request $request)
+    {
+        $request->validate([
+            'name' => 'required|string|max:255|unique:countries',
+            'code' => 'required|string|max:10|unique:countries',
+            'region' => 'required|string|max:100',
+            'latitude' => 'required|numeric',
+            'longitude' => 'required|numeric',
+        ]);
+
+        Country::create([
+            'name' => $request->name,
+            'code' => strtoupper($request->code),
+            'region' => $request->region,
+            'latitude' => $request->latitude,
+            'longitude' => $request->longitude,
+            'is_active' => true,
+        ]);
+
+        return back()->with('success', 'Country added. Run "Sync Metrics" to fetch its data.');
+    }
+
+    public function destroyCountry(Country $country)
+    {
+        $country->delete();
+        return back()->with('success', 'Country deleted successfully.');
+    }
+    public function toggleCountryStatus(Request $request)
+    {
+        $country = Country::findOrFail($request->country_id);
+        $country->is_active = !$country->is_active;
+        $country->save();
+        return back()->with('success', $country->name . ' has been ' . ($country->is_active ? 'activated' : 'deactivated'));
+    }
+
+    public function bulkToggleCountries(Request $request)
+    {
+        $status = $request->status === 'activate' ? true : false;
+        Country::query()->update(['is_active' => $status]);
+        return back()->with('success', 'All countries have been ' . ($status ? 'activated' : 'deactivated'));
     }
 }

@@ -2,18 +2,15 @@
 
 @section('content')
 <div class="d-flex justify-content-between align-items-center mb-4">
-    <h4 class="fw-bold mb-0 text-light"><i class="fa-solid fa-newspaper text-info me-2"></i> Global Intelligence Feed</h4>
-    <button id="syncBtn" class="btn btn-primary shadow-sm fw-bold px-4" onclick="syncData()">
-        <i class="fa-solid fa-cloud-arrow-down me-2"></i> Pull Data & News Now
-    </button>
+    <h4 class="fw-bold mb-0" style="color: #4a3b32;"><i class="fa-solid fa-newspaper me-2" style="color: #a98467;"></i> Global Intelligence Feed</h4>
 </div>
 
-<div class="card p-4 mb-4">
+<div class="glass-card p-4 mb-4">
     <div class="d-flex justify-content-between align-items-center mb-3">
-        <h5 class="fw-bold mb-0">Intelligence Filters</h5>
+        <h5 class="fw-bold mb-0" style="color: #4a3b32;">Intelligence Filters</h5>
     </div>
-    <div class="d-flex gap-2 flex-nowrap overflow-x-auto pb-2" id="country-filters" style="scrollbar-width: thin; scrollbar-color: #475569 transparent;">
-        <button class="btn btn-outline-secondary active text-nowrap" onclick="loadNews(null)">Global (All)</button>
+    <div class="d-flex gap-2 flex-nowrap overflow-x-auto pb-2" id="country-filters" style="scrollbar-width: thin; scrollbar-color: #a98467 transparent;">
+        <button class="btn btn-outline-coksu active text-nowrap" onclick="loadNews(null)">Global (All)</button>
         <!-- Country buttons injected here -->
     </div>
 </div>
@@ -82,18 +79,18 @@
 
                 const card = `
                     <div class="col-md-4">
-                        <div class="card h-100 overflow-hidden" style="border-top: 3px solid ${article.sentiment_score < 0 ? '#ef4444' : (article.sentiment_score > 0 ? '#10b981' : '#64748b')}">
-                            <div class="card-body">
-                                <div class="d-flex justify-content-between mb-2">
-                                    <span class="badge bg-dark border border-secondary text-light"><i class="fa-solid fa-location-dot text-info me-1"></i> ${article.country ? article.country.name : 'Unknown'}</span>
-                                    <span class="badge ${badgeClass}">Sentiment: ${article.sentiment_score}</span>
+                        <div class="card glass-card h-100 overflow-hidden d-flex flex-column" style="border-top: 3px solid ${article.sentiment_score < 0 ? '#ef4444' : (article.sentiment_score > 0 ? '#10b981' : '#a98467')};">
+                            <div class="card-body p-4 flex-grow-1">
+                                <div class="d-flex justify-content-between mb-3">
+                                    <span class="badge bg-white border text-dark shadow-sm" style="border-color: rgba(169, 132, 103, 0.3) !important;"><i class="fa-solid fa-location-dot me-1" style="color: #a98467;"></i> ${article.country ? article.country.name : 'Unknown'}</span>
+                                    <span class="badge ${badgeClass} shadow-sm">Sentiment: ${article.sentiment_score}</span>
                                 </div>
-                                <h6 class="fw-bold lh-base">${article.title}</h6>
-                                <p class="small text-secondary mb-0 mt-2"><i class="fa-solid fa-newspaper me-1"></i> Source: ${article.source || 'Unknown'}</p>
+                                <h6 class="fw-bold lh-base" style="color: #4a3b32;">${article.title}</h6>
+                                <p class="small text-secondary mb-0 mt-3"><i class="fa-solid fa-newspaper me-1"></i> Source: ${article.source || 'Unknown'}</p>
                             </div>
-                            <div class="card-footer bg-transparent border-top border-secondary d-flex justify-content-between align-items-center">
-                                <span class="small text-muted"><i class="fa-regular fa-clock me-1"></i> ${new Date(article.published_at).toLocaleDateString()}</span>
-                                <a href="${article.url}" target="_blank" class="btn btn-sm btn-outline-info">Read Source</a>
+                            <div class="card-footer mt-auto bg-transparent border-top d-flex justify-content-between align-items-center py-3" style="border-color: rgba(169, 132, 103, 0.2) !important; position: relative; z-index: 10;">
+                                <span class="small text-muted fw-medium"><i class="fa-regular fa-clock me-1"></i> ${new Date(article.published_at).toLocaleDateString()}</span>
+                                <a href="${article.url}" target="_blank" class="btn btn-sm btn-outline-coksu" style="position: relative; z-index: 20;">Read Source</a>
                             </div>
                         </div>
                     </div>
@@ -107,8 +104,8 @@
                 if (countryData) {
                     grid.innerHTML += `
                         <div class="col-12 mt-4 text-center">
-                            <hr class="border-secondary mb-4">
-                            <a href="/country/${countryData.id}" class="btn btn-outline-primary px-4 py-2 fw-bold"><i class="fa-solid fa-flag me-2"></i> View ${countryData.name}'s Full Profile</a>
+                            <hr class="mb-4" style="border-color: rgba(169, 132, 103, 0.3) !important;">
+                            <a href="/country/${countryData.id}" class="btn btn-outline-coksu px-4 py-2 fw-bold"><i class="fa-solid fa-flag me-2"></i> View ${countryData.name}'s Full Profile</a>
                         </div>
                     `;
                 }
@@ -119,46 +116,7 @@
         }
     }
 
-    async function syncData() {
-        const btn = document.getElementById('syncBtn');
-        btn.disabled = true;
 
-        if (currentCountryFilter) {
-            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin me-2"></i> Scanning Region...';
-            try {
-                const formData = new FormData();
-                formData.append('country_id', currentCountryFilter);
-                
-                const res = await fetch('/api/sync-news', { method: 'POST', body: formData });
-                const data = await res.json();
-                
-                loadNews(currentCountryFilter); // Reload news
-            } catch (e) {
-                alert('Error connecting to external APIs.');
-            }
-        } else {
-            // Global Sync: Fetch sequentially to avoid timeout
-            for (let i = 0; i < allCountries.length; i++) {
-                btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin me-2"></i> Scanning ${i+1} / ${allCountries.length}...`;
-                try {
-                    const formData = new FormData();
-                    formData.append('country_id', allCountries[i].id);
-                    
-                    await fetch('/api/sync-news', { method: 'POST', body: formData });
-                    
-                    // Small delay to respect rate limit (1 second)
-                    await new Promise(r => setTimeout(r, 1000));
-                } catch (e) {
-                    console.error('Failed on country ' + allCountries[i].name);
-                }
-            }
-            alert('Global Scan Completed!');
-            loadNews(null);
-        }
-
-        btn.innerHTML = '<i class="fa-solid fa-cloud-arrow-down me-2"></i> Pull Data & News Now';
-        btn.disabled = false;
-    }
 
     document.addEventListener('DOMContentLoaded', () => {
         loadCountries().then(() => loadNews(null));

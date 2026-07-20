@@ -16,9 +16,17 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         User::factory()->create([
-            'name' => 'Admin User',
-            'email' => 'admin@omnichain.test',
+            'name' => 'Admin',
+            'username' => 'admin',
             'password' => bcrypt('password'),
+            'role' => 'admin',
+        ]);
+
+        User::factory()->create([
+            'name' => 'Regular User',
+            'username' => 'user',
+            'password' => bcrypt('password'),
+            'role' => 'user',
         ]);
 
         $positiveWords = ['growth', 'profit', 'success', 'boom', 'increase', 'stable', 'positive', 'gain', 'surplus', 'recovery', 'uptrend', 'thrive', 'prosper', 'improvement', 'advantage'];

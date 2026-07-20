@@ -22,4 +22,9 @@ class Country extends Model
     {
         return $this->hasMany(Port::class);
     }
+
+    public function watchlists()
+    {
+        return $this->hasMany(Watchlist::class);
+    }
 }

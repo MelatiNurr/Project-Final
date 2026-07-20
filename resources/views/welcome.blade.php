@@ -2,15 +2,15 @@
 
 @section('content')
 <div class="d-flex justify-content-between align-items-center mb-4">
-    <h4 class="fw-bold mb-0 text-transparent bg-clip-text" style="background: linear-gradient(135deg, #e2e8f0, #94a3b8); -webkit-background-clip: text; -webkit-text-fill-color: transparent;"><i class="fa-solid fa-satellite-dish text-primary me-2"></i> Global Operations Platform</h4>
-    <button id="syncMetricsBtn" class="btn btn-outline-info shadow-sm fw-bold" onclick="syncMetrics()">
+    <h4 class="fw-bold mb-0 text-transparent bg-clip-text" style="color: #4a3b32;"><i class="fa-solid fa-satellite-dish me-2" style="color: #a98467;"></i> Global Operations Platform</h4>
+    <button id="syncMetricsBtn" class="btn btn-outline-coksu shadow-sm fw-bold" onclick="syncMetrics()">
         <i class="fa-solid fa-rotate me-1"></i> Sync Metrics
     </button>
 </div>
 
 <div class="row g-4 mb-4">
     <div class="col-md-3">
-        <div class="card h-100 p-4">
+        <div class="glass-card h-100 p-4">
             <div class="d-flex justify-content-between align-items-start">
                 <div>
                     <h6 class="text-muted fw-semibold mb-1">Global Risk Average</h6>
@@ -24,13 +24,13 @@
         </div>
     </div>
     <div class="col-md-3">
-        <div class="card h-100 p-4">
+        <div class="glass-card h-100 p-4">
             <div class="d-flex justify-content-between align-items-start">
                 <div>
                     <h6 class="text-muted fw-semibold mb-1">Countries Tracked</h6>
                     <p class="small text-secondary mb-0">Active watchlists</p>
                 </div>
-                <i class="fa-solid fa-flag text-secondary fs-4"></i>
+                <i class="fa-solid fa-flag fs-4" style="color: #a98467;"></i>
             </div>
             <div class="mt-3">
                 <span class="stat-value" id="countries-val">0</span>
@@ -38,7 +38,7 @@
         </div>
     </div>
     <div class="col-md-3">
-        <div class="card h-100 p-4">
+        <div class="glass-card h-100 p-4">
             <div class="d-flex justify-content-between align-items-start">
                 <div>
                     <h6 class="text-muted fw-semibold mb-1">Active Ports</h6>
@@ -52,7 +52,7 @@
         </div>
     </div>
     <div class="col-md-3">
-        <div class="card h-100 p-4">
+        <div class="glass-card h-100 p-4">
             <div class="d-flex justify-content-between align-items-start">
                 <div>
                     <h6 class="text-muted fw-semibold mb-1">System Status</h6>
@@ -69,43 +69,43 @@
 
 <div class="row g-4 mb-4">
     <div class="col-lg-12">
-        <div class="card p-3 h-100">
+        <div class="glass-card p-3 h-100">
             <div class="d-flex justify-content-between align-items-center mb-3 px-2">
-                <h5 class="card-title fw-bold mb-0" style="background: linear-gradient(90deg, #38bdf8, #818cf8); -webkit-background-clip: text; -webkit-text-fill-color: transparent;"><i class="fa-solid fa-map-location-dot text-primary me-2"></i> Supply Chain Risk Map</h5>
+                <h5 class="card-title fw-bold mb-0" style="color: #4a3b32;"><i class="fa-solid fa-map-location-dot me-2" style="color: #a98467;"></i> Supply Chain Risk Map</h5>
                 <span class="badge bg-secondary">Live</span>
             </div>
             <div id="map"></div>
 
             <!-- Detail Panel -->
-            <div id="country-detail-panel" class="d-none mt-4 border-top border-secondary pt-3">
+            <div id="country-detail-panel" class="d-none mt-4 border-top pt-3" style="border-color: rgba(169, 132, 103, 0.3) !important;">
                 <div class="d-flex justify-content-between align-items-center mb-3">
-                    <h5 class="fw-bold mb-0" id="cd-name">Country Name</h5>
+                    <h5 class="fw-bold mb-0" id="cd-name" style="color: #4a3b32;">Country Name</h5>
                     <div>
-                        <span class="badge bg-primary me-2">Selected Region</span>
-                        <a href="#" id="cd-profile-link" class="btn btn-sm btn-outline-info"><i class="fa-solid fa-arrow-right me-1"></i> View Full Profile</a>
+                        <span class="badge" style="background-color: #a98467;">Selected Region</span>
+                        <a href="#" id="cd-profile-link" class="btn btn-sm btn-outline-coksu"><i class="fa-solid fa-arrow-right me-1"></i> View Full Profile</a>
                     </div>
                 </div>
                 <div class="row g-3">
                     <div class="col-md-3">
-                        <div class="p-3 bg-dark rounded border border-secondary h-100">
+                        <div class="p-3 bg-white rounded border h-100" style="border-color: rgba(169, 132, 103, 0.3) !important;">
                             <span class="d-block small text-muted mb-1"><i class="fa-solid fa-cloud text-info me-1"></i> Temperature</span>
-                            <span class="fw-bold fs-5 text-light" id="cd-temp">-</span>
+                            <span class="fw-bold fs-5 text-dark" id="cd-temp">-</span>
                         </div>
                     </div>
                     <div class="col-md-3">
-                        <div class="p-3 bg-dark rounded border border-secondary h-100">
+                        <div class="p-3 bg-white rounded border h-100" style="border-color: rgba(169, 132, 103, 0.3) !important;">
                             <span class="d-block small text-muted mb-1"><i class="fa-solid fa-wind text-info me-1"></i> Wind Speed</span>
-                            <span class="fw-bold fs-5 text-light" id="cd-wind">-</span>
+                            <span class="fw-bold fs-5 text-dark" id="cd-wind">-</span>
                         </div>
                     </div>
                     <div class="col-md-3">
-                        <div class="p-3 bg-dark rounded border border-secondary h-100">
+                        <div class="p-3 bg-white rounded border h-100" style="border-color: rgba(169, 132, 103, 0.3) !important;">
                             <span class="d-block small text-muted mb-1"><i class="fa-solid fa-money-bill-wave text-success me-1"></i> GDP & Inflation</span>
-                            <span class="fw-bold fs-6 text-light" id="cd-econ">-</span>
+                            <span class="fw-bold fs-6 text-dark" id="cd-econ">-</span>
                         </div>
                     </div>
                     <div class="col-md-3">
-                        <div class="p-3 bg-dark rounded border border-secondary h-100">
+                        <div class="p-3 bg-white rounded border h-100" style="border-color: rgba(169, 132, 103, 0.3) !important;">
                             <span class="d-block small text-muted mb-1"><i class="fa-solid fa-shield-halved text-danger me-1"></i> Overall Risk</span>
                             <span class="fw-bold fs-5 text-danger" id="cd-risk">-</span>
                         </div>
@@ -117,28 +117,28 @@
 </div>
 <div class="row g-4 mb-4">
     <div class="col-lg-12">
-        <div class="card p-4 h-100" style="background: linear-gradient(145deg, rgba(30, 41, 59, 0.9), rgba(15, 23, 42, 0.9)); border-top: 3px solid #38bdf8; box-shadow: 0 10px 30px rgba(0,0,0,0.5);">
-            <h5 class="card-title fw-bold mb-4"><i class="fa-solid fa-code-compare text-warning me-2"></i> Country Comparison</h5>
+        <div class="glass-card p-4 h-100">
+            <h5 class="card-title fw-bold mb-4" style="color: #4a3b32;"><i class="fa-solid fa-code-compare me-2" style="color: #a98467;"></i> Country Comparison</h5>
             
             <div class="row g-3 align-items-end mb-4">
                 <div class="col-md-5">
                     <label class="form-label text-muted small fw-semibold">Country A (Base)</label>
-                    <select id="country-a-select" class="form-select bg-dark text-light border-secondary shadow-sm">
+                    <select id="country-a-select" class="form-select bg-white text-dark shadow-sm" style="border-color: rgba(169, 132, 103, 0.3);">
                         <option value="">Loading...</option>
                     </select>
                 </div>
                 <div class="col-md-2 text-center">
-                    <button class="btn btn-primary w-100 fw-bold shadow" onclick="compareCountries()"><i class="fa-solid fa-bolt me-1"></i> Compare</button>
+                    <button class="btn bg-coksu w-100 fw-bold shadow" onclick="compareCountries()"><i class="fa-solid fa-bolt me-1"></i> Compare</button>
                 </div>
                 <div class="col-md-5">
                     <label class="form-label text-muted small fw-semibold">Country B (Target)</label>
-                    <select id="country-b-select" class="form-select bg-dark text-light border-secondary shadow-sm">
+                    <select id="country-b-select" class="form-select bg-white text-dark shadow-sm" style="border-color: rgba(169, 132, 103, 0.3);">
                         <option value="">Loading...</option>
                     </select>
                 </div>
             </div>
 
-            <div id="comparison-results" class="d-none mt-4 border-top border-secondary pt-4">
+            <div id="comparison-results" class="d-none mt-4 border-top pt-4" style="border-color: rgba(169, 132, 103, 0.3) !important;">
                 <div class="row g-4">
                     <!-- Left: Data Table -->
                     <div class="col-md-7">
@@ -151,35 +151,35 @@
                             </div>
                         </div>
 
-                        <div class="table-responsive rounded border border-secondary">
-                            <table class="table table-dark table-hover align-middle text-center mb-0" style="border-color: #334155;">
+                        <div class="table-responsive rounded border" style="border-color: rgba(169, 132, 103, 0.3) !important;">
+                            <table class="table table-hover align-middle text-center mb-0 bg-transparent">
                                 <thead>
-                                    <tr style="background-color: #1e293b;">
-                                        <th class="text-start w-25 text-muted small fw-semibold p-3">METRIC</th>
-                                        <th id="ca-name" class="text-info w-25 fw-bold p-3">Country A</th>
-                                        <th id="cb-name" class="text-warning w-25 fw-bold p-3">Country B</th>
+                                    <tr style="background-color: rgba(169, 132, 103, 0.1);">
+                                        <th class="text-start w-25 text-muted small fw-semibold p-3" style="color: #4a3b32 !important;">METRIC</th>
+                                        <th id="ca-name" class="w-25 fw-bold p-3" style="color: #4a3b32;">Country A</th>
+                                        <th id="cb-name" class="text-warning w-25 fw-bold p-3" style="color: #a98467 !important;">Country B</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     <tr>
                                         <td class="text-start text-muted small fw-semibold p-3"><i class="fa-solid fa-shield-halved me-2"></i> Total Risk</td>
-                                        <td class="p-3"><span id="ca-risk-val" class="fs-5 fw-bold text-info">-</span></td>
+                                        <td class="p-3"><span id="ca-risk-val" class="fs-5 fw-bold text-dark">-</span></td>
                                         <td class="p-3"><span id="cb-risk-val" class="fs-5 fw-bold text-warning">-</span></td>
                                     </tr>
                                     <tr>
                                         <td class="text-start text-muted small fw-semibold p-3"><i class="fa-solid fa-money-bill-transfer me-2"></i> Currency (vs USD)</td>
-                                        <td id="ca-currency" class="small p-3">-</td>
-                                        <td id="cb-currency" class="small p-3">-</td>
+                                        <td id="ca-currency" class="small p-3 text-dark">-</td>
+                                        <td id="cb-currency" class="small p-3 text-dark">-</td>
                                     </tr>
                                     <tr>
                                         <td class="text-start text-muted small fw-semibold p-3"><i class="fa-solid fa-chart-pie me-2"></i> GDP & Inflation</td>
-                                        <td id="ca-econ" class="small p-3">-</td>
-                                        <td id="cb-econ" class="small p-3">-</td>
+                                        <td id="ca-econ" class="small p-3 text-dark">-</td>
+                                        <td id="cb-econ" class="small p-3 text-dark">-</td>
                                     </tr>
                                     <tr>
                                         <td class="text-start text-muted small fw-semibold p-3"><i class="fa-solid fa-cloud-sun-rain me-2"></i> Weather (Capitals)</td>
-                                        <td id="ca-temp" class="small p-3">-</td>
-                                        <td id="cb-temp" class="small p-3">-</td>
+                                        <td id="ca-temp" class="small p-3 text-dark">-</td>
+                                        <td id="cb-temp" class="small p-3 text-dark">-</td>
                                     </tr>
                                     <tr>
                                         <td class="text-start text-muted small fw-semibold p-3"><i class="fa-solid fa-anchor me-2"></i> Tracked Ports</td>
@@ -216,9 +216,9 @@
 
     // Initialize Map
     function initMap() {
-        // Dark theme map using CartoDB Dark Matter
+        // Light theme map using CartoDB Light Matter
         map = L.map('map').setView([20, 0], 2);
-        L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+        L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
             attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OSM</a> contributors &copy; <a href="https://carto.com/">CARTO</a>',
             subdomains: 'abcd',
             maxZoom: 20
@@ -357,11 +357,11 @@
         document.getElementById('ca-currency').innerText = (riskA.country && riskA.country.currency) ? `1 USD = ${parseFloat(riskA.country.exchange_rate).toFixed(2)} ${riskA.country.currency}` : '-';
         document.getElementById('cb-currency').innerText = (riskB.country && riskB.country.currency) ? `1 USD = ${parseFloat(riskB.country.exchange_rate).toFixed(2)} ${riskB.country.currency}` : '-';
         
-        // Update Raw Data
-        document.getElementById('ca-temp').innerText = (riskA.country && riskA.country.temperature) ? `${riskA.country.temperature}°C, Wind: ${riskA.country.wind_speed}km/h` : 'No data';
-        document.getElementById('cb-temp').innerText = (riskB.country && riskB.country.temperature) ? `${riskB.country.temperature}°C, Wind: ${riskB.country.wind_speed}km/h` : 'No data';
-        document.getElementById('ca-econ').innerText = (riskA.country && riskA.country.gdp) ? `GDP: $${(riskA.country.gdp / 1e9).toFixed(1)}B, Inf: ${riskA.country.inflation}%` : 'No data';
-        document.getElementById('cb-econ').innerText = (riskB.country && riskB.country.gdp) ? `GDP: $${(riskB.country.gdp / 1e9).toFixed(1)}B, Inf: ${riskB.country.inflation}%` : 'No data';
+        // Update Raw Data (Handle 0 values properly)
+        document.getElementById('ca-temp').innerText = (riskA.country && riskA.country.temperature !== null) ? `${riskA.country.temperature}°C, Wind: ${riskA.country.wind_speed}km/h` : 'No data';
+        document.getElementById('cb-temp').innerText = (riskB.country && riskB.country.temperature !== null) ? `${riskB.country.temperature}°C, Wind: ${riskB.country.wind_speed}km/h` : 'No data';
+        document.getElementById('ca-econ').innerText = (riskA.country && riskA.country.gdp !== null) ? `GDP: $${(riskA.country.gdp / 1e9).toFixed(1)}B, Inf: ${riskA.country.inflation}%` : 'No data';
+        document.getElementById('cb-econ').innerText = (riskB.country && riskB.country.gdp !== null) ? `GDP: $${(riskB.country.gdp / 1e9).toFixed(1)}B, Inf: ${riskB.country.inflation}%` : 'No data';
 
         // Recommendation Logic
         const recBox = document.getElementById('recommendation-box');
@@ -461,9 +461,9 @@
                     {
                         label: riskA.country ? riskA.country.name : 'Country A',
                         data: [riskA.weather_risk, riskA.economic_risk, riskA.sentiment_risk],
-                        backgroundColor: 'rgba(56, 189, 248, 0.2)',
-                        borderColor: '#38bdf8',
-                        pointBackgroundColor: '#38bdf8',
+                        backgroundColor: 'rgba(169, 132, 103, 0.2)',
+                        borderColor: '#a98467',
+                        pointBackgroundColor: '#a98467',
                     },
                     {
                         label: riskB.country ? riskB.country.name : 'Country B',
@@ -477,8 +477,8 @@
             options: {
                 scales: {
                     r: {
-                        angleLines: { color: 'rgba(255, 255, 255, 0.1)' },
-                        grid: { color: 'rgba(255, 255, 255, 0.1)' },
+                        angleLines: { color: 'rgba(0, 0, 0, 0.1)' },
+                        grid: { color: 'rgba(0, 0, 0, 0.1)' },
                         pointLabels: { font: { size: 12, family: 'Inter' } },
                         ticks: { display: false, max: 100, min: 0 }
                     }

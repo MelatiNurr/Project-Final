@@ -10,6 +10,7 @@ use App\Services\GNewsService;
 use App\Services\WorldBankService;
 use App\Services\OpenMeteoService;
 use App\Services\RiskAnalysisService;
+use App\Services\RestCountriesService;
 
 class FetchApiDataCommand extends Command
 {
@@ -21,7 +22,8 @@ class FetchApiDataCommand extends Command
         WorldBankService $wbService, 
         OpenMeteoService $weatherService, 
         RiskAnalysisService $riskService,
-        \App\Services\ExchangeRateService $exchangeService
+        \App\Services\ExchangeRateService $exchangeService,
+        RestCountriesService $restCountriesService
     ) {
         $type = $this->option('type');
         $countryId = $this->option('country');
@@ -91,15 +93,24 @@ class FetchApiDataCommand extends Command
                     $this->error("   - Failed to fetch economy data.");
                 }
 
-                // Fetch Currency
+                // 3. Fetch Currency & Exchange Rate
                 try {
-                    $rates = $exchangeService->getRates('USD');
-                    $currencyMap = ['US' => 'USD', 'CN' => 'CNY', 'ID' => 'IDR', 'DE' => 'EUR'];
+                    // Comprehensive Currency Map since REST Countries API v3.1 is deprecated
+                    $currencyMap = [
+                        'US' => 'USD', 'CN' => 'CNY', 'ID' => 'IDR', 'DE' => 'EUR',
+                        'JP' => 'JPY', 'AU' => 'AUD', 'GB' => 'GBP', 'FR' => 'EUR',
+                        'IR' => 'IRR', 'KP' => 'KPW', 'KR' => 'KRW', 'RU' => 'RUB',
+                        'IN' => 'INR', 'BR' => 'BRL', 'ZA' => 'ZAR', 'CA' => 'CAD',
+                        'SA' => 'SAR', 'AE' => 'AED', 'SG' => 'SGD', 'MY' => 'MYR'
+                    ];
                     $currencyCode = $currencyMap[$country->code] ?? 'USD';
+                    
+                    // Fetch Exchange Rate
+                    $rates = $exchangeService->getRates('USD');
                     $rate = $rates['rates'][$currencyCode] ?? 1;
                     $country->update(['exchange_rate' => $rate, 'currency' => $currencyCode]);
                 } catch (\Exception $e) {
-                    $this->error("   - Failed to fetch exchange rates.");
+                    $this->error("   - Failed to fetch exchange rates: " . $e->getMessage());
                 }
 
                 // 3. Sync Ports
@@ -190,7 +201,7 @@ class FetchApiDataCommand extends Command
                         'country_id' => $country->id,
                         'title' => "Mock: Supply Chain Disruptions in {$country->name}",
                         'source' => "Simulated News",
-                        'url' => '#mock1-'.$country->id,
+                        'url' => 'https://news.google.com/search?q=' . urlencode($country->name . ' supply chain'),
                         'published_at' => now(),
                         'sentiment_score' => -0.4 // Fixed sentiment
                     ]);
@@ -198,7 +209,7 @@ class FetchApiDataCommand extends Command
                         'country_id' => $country->id,
                         'title' => "Mock: Economic recovery boosts {$country->name} exports",
                         'source' => "Simulated News",
-                        'url' => '#mock2-'.$country->id,
+                        'url' => 'https://news.google.com/search?q=' . urlencode($country->name . ' economic recovery exports'),
                         'published_at' => now()->subHours(2),
                         'sentiment_score' => 0.6 // Fixed sentiment
                     ]);
