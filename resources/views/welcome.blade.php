@@ -385,37 +385,31 @@
         
         if (bestCountry) {
             let reasons = [];
-            
-            // Check weather
-            if ((bestCountry === nameA && wA < wB) || (bestCountry === nameB && wB < wA)) {
-                reasons.push('kondisi cuaca yang lebih baik');
-            }
-            // Check economic
-            if ((bestCountry === nameA && eA < eB) || (bestCountry === nameB && eB < eA)) {
-                reasons.push('stabilitas ekonomi yang lebih kuat');
-            }
-            // Check sentiment
-            if ((bestCountry === nameA && sA < sB) || (bestCountry === nameB && sB < sA)) {
-                reasons.push('sentimen berita yang lebih positif');
-            }
-            
-            let reasonText = "";
-            if (reasons.length > 0) {
-                reasonText = " Hal ini didorong oleh " + reasons.join(' dan ') + " dibandingkan dengan " + altName + ".";
-            }
-            
-            // Highlight trade-offs (where the alternative country is actually better)
-            let tradeoff = "";
             let tradeReasons = [];
-            if ((bestCountry === nameA && wA > wB) || (bestCountry === nameB && wB > wA)) tradeReasons.push('cuaca');
-            if ((bestCountry === nameA && eA > eB) || (bestCountry === nameB && eB > eA)) tradeReasons.push('ekonomi');
-            if ((bestCountry === nameA && sA > sB) || (bestCountry === nameB && sB > sA)) tradeReasons.push('sentimen berita');
             
-            if (tradeReasons.length > 0) {
-                tradeoff = ` <em>Namun perlu diperhatikan bahwa ${altName} sebenarnya memiliki keunggulan pada aspek ${tradeReasons.join(' dan ')}.</em>`;
+            // Evaluasi Keunggulan (Strengths)
+            if ((bestCountry === nameA && wA < wB) || (bestCountry === nameB && wB < wA)) reasons.push('kestabilan kondisi cuaca');
+            if ((bestCountry === nameA && eA < eB) || (bestCountry === nameB && eB < eA)) reasons.push('iklim ekonomi dan inflasi');
+            if ((bestCountry === nameA && sA < sB) || (bestCountry === nameB && sB < sA)) reasons.push('sentimen berita intelijen positif');
+            
+            // Evaluasi Kelemahan (Trade-offs / Weaknesses)
+            if ((bestCountry === nameA && wA > wB) || (bestCountry === nameB && wB > wA)) tradeReasons.push('ancaman cuaca ekstrem');
+            if ((bestCountry === nameA && eA > eB) || (bestCountry === nameB && eB > eA)) tradeReasons.push('gejolak inflasi ekonomi');
+            if ((bestCountry === nameA && sA > sB) || (bestCountry === nameB && sB > sA)) tradeReasons.push('sentimen berita yang kurang menguntungkan');
+
+            let paragraph = `Berdasarkan kalkulasi algoritma <strong>Weighted Risk Model</strong>, <strong>${bestCountry}</strong> ditetapkan sebagai pilihan logistik dan investasi terbaik karena mencatatkan tingkat risiko agregat yang lebih rendah di angka <strong>${bestScore}%</strong> (dibandingkan ${altName} di angka ${altScore}%).<br><br>`;
+
+            if (reasons.length > 0) {
+                paragraph += `Keputusan ini sangat didorong oleh keunggulan mutlak ${bestCountry} pada aspek <strong>${reasons.join(' dan ')}</strong>. Faktor-faktor ini memegang bobot krusial (hingga 40%) dalam memastikan keamanan rantai pasok dari disrupsi.<br><br>`;
             }
 
-            recText.innerHTML = `<strong>${bestCountry}</strong> adalah pilihan yang direkomendasikan karena memiliki risiko keseluruhan yang lebih rendah (${bestScore}% vs ${altScore}%).${reasonText}${tradeoff}`;
+            if (tradeReasons.length > 0) {
+                paragraph += `<span class="text-secondary"><em>Walaupun sistem merekomendasikan ${bestCountry}</em>, manajer rantai pasok tetap harus memperhitungkan risiko operasional. Secara data objektif, ${altName} sebenarnya tampil lebih unggul karena ${bestCountry} masih dihantui oleh potensi <strong>${tradeReasons.join(' dan ')}</strong> yang relatif lebih tinggi. Namun, setelah algoritma menghitung <i>trade-off</i> tersebut, kelemahan ini dinilai masih berada dalam batas toleransi dan tidak cukup signifikan untuk menggoyahkan dominasi stabilitas yang ditawarkan oleh ${bestCountry}.</span>`;
+            } else {
+                paragraph += `<span class="text-secondary">Analisis data mendalam menunjukkan bahwa ${bestCountry} mendominasi seluruh metrik operasional secara sempurna tanpa ada celah kelemahan yang berarti jika disandingkan secara langsung dengan ${altName}, menjadikannya opsi pengiriman yang sangat aman.</span>`;
+            }
+
+            recText.innerHTML = paragraph;
             
             // Set style for clear recommendation
             recBox.style.backgroundColor = 'rgba(16, 185, 129, 0.1)';
