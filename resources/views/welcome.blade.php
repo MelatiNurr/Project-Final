@@ -115,6 +115,67 @@
         </div>
     </div>
 </div>
+
+<!-- Global Country Dashboard -->
+<div class="row g-4 mb-4">
+    <div class="col-lg-12">
+        <div class="glass-card p-4 h-100">
+            <h5 class="card-title fw-bold mb-4" style="color: #4a3b32;"><i class="fa-solid fa-earth-americas me-2" style="color: #a98467;"></i> Global Country Dashboard</h5>
+            
+            <div class="row g-3 mb-4">
+                <div class="col-md-6">
+                    <label class="form-label text-muted small fw-semibold">Select Country to Monitor</label>
+                    <select id="gcd-select" class="form-select bg-white text-dark shadow-sm" style="border-color: rgba(169, 132, 103, 0.3);" onchange="showGCDData()">
+                        <option value="">Loading...</option>
+                    </select>
+                </div>
+                <div class="col-md-6 d-flex align-items-end">
+                    <a href="#" id="gcd-profile-link" class="btn btn-outline-coksu shadow-sm fw-bold d-none"><i class="fa-solid fa-arrow-right me-1"></i> View Full Profile</a>
+                </div>
+            </div>
+
+            <div id="gcd-results" class="d-none mt-4 border-top pt-4" style="border-color: rgba(169, 132, 103, 0.3) !important;">
+                <div class="row g-3">
+                    <div class="col-md-2 col-sm-4 text-center">
+                        <div class="p-3 bg-white rounded border h-100" style="border-color: rgba(169, 132, 103, 0.3) !important;">
+                            <i class="fa-solid fa-users text-primary fs-3 mb-2 opacity-75"></i>
+                            <h6 class="text-muted small fw-bold text-uppercase mb-1">Population</h6>
+                            <span class="fs-5 fw-bold text-dark" id="gcd-pop">-</span>
+                        </div>
+                    </div>
+                    <div class="col-md-2 col-sm-4 text-center">
+                        <div class="p-3 bg-white rounded border h-100" style="border-color: rgba(169, 132, 103, 0.3) !important;">
+                            <i class="fa-solid fa-money-bill-wave text-success fs-3 mb-2 opacity-75"></i>
+                            <h6 class="text-muted small fw-bold text-uppercase mb-1">GDP</h6>
+                            <span class="fs-5 fw-bold text-dark" id="gcd-gdp">-</span>
+                        </div>
+                    </div>
+                    <div class="col-md-2 col-sm-4 text-center">
+                        <div class="p-3 bg-white rounded border h-100" style="border-color: rgba(169, 132, 103, 0.3) !important;">
+                            <i class="fa-solid fa-arrow-trend-up text-danger fs-3 mb-2 opacity-75"></i>
+                            <h6 class="text-muted small fw-bold text-uppercase mb-1">Inflation</h6>
+                            <span class="fs-5 fw-bold text-dark" id="gcd-inf">-</span>
+                        </div>
+                    </div>
+                    <div class="col-md-3 col-sm-6 text-center">
+                        <div class="p-3 bg-white rounded border h-100" style="border-color: rgba(169, 132, 103, 0.3) !important;">
+                            <i class="fa-solid fa-coins fs-3 mb-2 opacity-75" style="color: #a98467;"></i>
+                            <h6 class="text-muted small fw-bold text-uppercase mb-1">Currency</h6>
+                            <span class="fs-6 fw-bold text-dark" id="gcd-cur">-</span>
+                        </div>
+                    </div>
+                    <div class="col-md-3 col-sm-6 text-center">
+                        <div class="p-3 bg-white rounded border h-100" style="border-color: rgba(169, 132, 103, 0.3) !important;">
+                            <i class="fa-solid fa-cloud-sun text-info fs-3 mb-2 opacity-75"></i>
+                            <h6 class="text-muted small fw-bold text-uppercase mb-1">Current Weather</h6>
+                            <span class="fs-6 fw-bold text-dark" id="gcd-wea">-</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 <div class="row g-4 mb-4">
     <div class="col-lg-12">
         <div class="glass-card p-4 h-100">
@@ -261,6 +322,7 @@
     function populateSelects() {
         const selectA = document.getElementById('country-a-select');
         const selectB = document.getElementById('country-b-select');
+        const selectGCD = document.getElementById('gcd-select');
         
         let options = '<option value="">Select Country...</option>';
         countriesData.forEach(c => {
@@ -269,9 +331,50 @@
 
         selectA.innerHTML = options;
         selectB.innerHTML = options;
+        selectGCD.innerHTML = options;
 
         new TomSelect('#country-a-select', { create: false, sortField: { field: "text", direction: "asc" }});
         new TomSelect('#country-b-select', { create: false, sortField: { field: "text", direction: "asc" }});
+        new TomSelect('#gcd-select', { create: false, sortField: { field: "text", direction: "asc" }});
+    }
+
+    function showGCDData() {
+        const id = document.getElementById('gcd-select').value;
+        const resultsPanel = document.getElementById('gcd-results');
+        const profileLink = document.getElementById('gcd-profile-link');
+        
+        if (!id) {
+            resultsPanel.classList.add('d-none');
+            profileLink.classList.add('d-none');
+            // Reset map view to global if cleared
+            map.flyTo([20, 0], 2, { animate: true, duration: 1.5 });
+            return;
+        }
+
+        const country = countriesData.find(c => c.id == id);
+        if (country) {
+            document.getElementById('gcd-pop').innerText = country.population ? (country.population / 1e6).toFixed(1) + 'M' : 'N/A';
+            document.getElementById('gcd-gdp').innerText = country.gdp ? '$' + (country.gdp / 1e9).toFixed(1) + 'B' : 'N/A';
+            document.getElementById('gcd-inf').innerText = country.inflation ? country.inflation + '%' : 'N/A';
+            document.getElementById('gcd-cur').innerText = country.currency ? `1 USD = ${parseFloat(country.exchange_rate).toFixed(2)} ${country.currency}` : 'N/A';
+            document.getElementById('gcd-wea').innerText = country.temperature !== null ? `${country.temperature}°C, ${country.wind_speed}km/h` : 'N/A';
+            
+            profileLink.href = '/country/' + country.id;
+            
+            resultsPanel.classList.remove('d-none');
+            profileLink.classList.remove('d-none');
+
+            // Zoom map to country and its ports
+            if (country.latitude && country.longitude) {
+                map.flyTo([country.latitude, country.longitude], 5, {
+                    animate: true,
+                    duration: 1.5
+                });
+                
+                // Optionally smoothly scroll to the map so user sees the animation
+                document.getElementById('map').scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+        }
     }
 
     function renderMapMarkers() {

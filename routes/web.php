@@ -23,6 +23,9 @@ Route::middleware('auth')->group(function () {
     // Watchlist
     Route::get('/watchlist', [App\Http\Controllers\PublicController::class, 'watchlistIndex'])->name('watchlist.index');
     Route::post('/watchlist/toggle', [App\Http\Controllers\PublicController::class, 'toggleWatchlist'])->name('watchlist.toggle');
+    
+    // Visualization
+    Route::get('/visualization', [App\Http\Controllers\PublicController::class, 'visualizationDashboard'])->name('visualization');
 });
 
 Route::middleware(['auth', 'is_admin'])->group(function () {

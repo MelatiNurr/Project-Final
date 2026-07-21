@@ -24,9 +24,17 @@ class WorldBankService
             'mrv' => 1
         ]);
 
+        // Population (SP.POP.TOTL)
+        $populationResponse = Http::get("{$this->baseUrl}/country/{$countryIso2Code}/indicator/SP.POP.TOTL", [
+            'format' => 'json',
+            'per_page' => 1,
+            'mrv' => 1
+        ]);
+
         return [
             'gdp' => $gdpResponse->json(),
-            'inflation' => $inflationResponse->json()
+            'inflation' => $inflationResponse->json(),
+            'population' => $populationResponse->json()
         ];
     }
 }

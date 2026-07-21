@@ -88,7 +88,8 @@ class FetchApiDataCommand extends Command
                     $economy = $wbService->getMacroEconomics($country->code);
                     $gdp = isset($economy['gdp'][1][0]['value']) ? $economy['gdp'][1][0]['value'] : $gdp;
                     $inflation = isset($economy['inflation'][1][0]['value']) ? $economy['inflation'][1][0]['value'] : $inflation;
-                    $country->update(['gdp' => $gdp, 'inflation' => $inflation]);
+                    $population = isset($economy['population'][1][0]['value']) ? $economy['population'][1][0]['value'] : $country->population;
+                    $country->update(['gdp' => $gdp, 'inflation' => $inflation, 'population' => $population]);
                 } catch (\Exception $e) {
                     $this->error("   - Failed to fetch economy data.");
                 }

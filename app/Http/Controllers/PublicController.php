@@ -66,4 +66,14 @@ class PublicController extends Controller
             return response()->json(['status' => 'added', 'message' => 'Country added to watchlist']);
         }
     }
+
+    public function visualizationDashboard()
+    {
+        // Fetch all active countries with their latest risk scores
+        $countries = Country::where('is_active', true)->with(['riskScores' => function($q) {
+            $q->latest()->limit(1);
+        }])->get();
+
+        return view('visualization', compact('countries'));
+    }
 }

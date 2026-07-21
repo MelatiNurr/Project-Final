@@ -180,6 +180,10 @@
                     <i class="fa-solid fa-newspaper"></i> Intelligence Feed
                 </a>
                 
+                <a href="/visualization" class="sidebar-link {{ request()->is('visualization') ? 'active' : '' }}">
+                    <i class="fa-solid fa-chart-pie"></i> Data Visualization
+                </a>
+                
                 <a href="/countries" class="sidebar-link {{ request()->is('countries') || request()->is('country*') ? 'active' : '' }}">
                     <i class="fa-solid fa-flag"></i> Country Profiles
                 </a>
